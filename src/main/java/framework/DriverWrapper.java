@@ -11,9 +11,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -23,7 +26,6 @@ import java.util.Set;
 public class DriverWrapper {
 
     private RemoteWebDriver driver;
-    private static final String HUB_URL = "http://localhost:4444/wd/hub";
     // TODO: Load the Hub URL from a properties file
     private browsers driverBrowser;
     private operatingSystems driverOS;
@@ -72,12 +74,18 @@ public class DriverWrapper {
         driverBrowser = browser;
         driverOS = os;
 
+        // TODO we need to be able to run locally as well as on a grid
         URL seleniumHubUrl;
 
         try {
-            seleniumHubUrl = new URL(HUB_URL);
+
+            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            Properties props = new Properties();
+            props.load(input);
+
+            seleniumHubUrl = new URL(props.getProperty("hub_url"));
         }
-        catch (MalformedURLException e) {
+        catch (IOException  e) {
             throw new IllegalStateException("Selenium Hub URL invalid or not set");
         }
 
@@ -154,7 +162,7 @@ public class DriverWrapper {
      * Our tests should never interact with the driver directly but we'll provide a method for the
      * page objects to get at it
      */
-    protected RemoteWebDriver getDriver(){
+    protected WebDriver getDriver(){
         return driver;
     }
 
@@ -387,7 +395,8 @@ public class DriverWrapper {
         MAC ("macos", Platform.MAC),
         LINUX ("linux", Platform.LINUX),
         IOS ("ios", Platform.IOS),
-        ANDROID ("android", Platform.ANDROID);
+        ANDROID ("android", Platform.ANDROID),
+        LOCAL ("localhost", null);
 
         public final String osName;
         public final Platform platform;
