@@ -2,19 +2,21 @@ package framework;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
@@ -26,7 +28,6 @@ import java.util.Set;
 public class DriverWrapper {
 
     private RemoteWebDriver driver;
-    // TODO: Load the Hub URL from a properties file
     private browsers driverBrowser;
     private operatingSystems driverOS;
 
@@ -40,12 +41,11 @@ public class DriverWrapper {
     }
 
     /**
-     * Create a new driver by explicitly stating the browser we want
-     * We'll take whatever OS the grid gives us
+     * Create a new driver by explicitly stating the browser we want and running locally
      * @param browser
      */
     DriverWrapper(browsers browser){
-        setup(browser, null);
+        setup(browser, operatingSystems.LOCAL);
     }
 
     /**
@@ -74,36 +74,65 @@ public class DriverWrapper {
         driverBrowser = browser;
         driverOS = os;
 
-        // TODO we need to be able to run locally as well as on a grid
-        URL seleniumHubUrl;
+        switch(os) {
 
-        try {
+            case LOCAL:
 
-            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
-            Properties props = new Properties();
-            props.load(input);
+                switch(browser) {
 
-            seleniumHubUrl = new URL(props.getProperty("hub_url"));
+                    // TODO get driver locations from config
+                    case FIREFOX:
+                        driver = new FirefoxDriver();
+                        break;
+
+                    case CHROME:
+                        driver = new ChromeDriver();
+                        break;
+
+                    case IE11:
+                        driver = new InternetExplorerDriver();
+                        break;
+
+                    case EDGE:
+                        driver = new EdgeDriver();
+                        break;
+
+                    case SAFARI:
+                        driver = new SafariDriver();
+                        break;
+                }
+
+            default:
+
+                URL seleniumHubUrl;
+
+                try {
+
+                    InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
+                    Properties props = new Properties();
+                    props.load(input);
+
+                    seleniumHubUrl = new URL(props.getProperty("hub_url"));
+                } catch (IOException e) {
+                    throw new IllegalStateException("Selenium Hub URL invalid or not set");
+                }
+
+                DesiredCapabilities capabilities = setCapabilities();
+
+                driver = new RemoteWebDriver(seleniumHubUrl, capabilities);
         }
-        catch (IOException  e) {
-            throw new IllegalStateException("Selenium Hub URL invalid or not set");
-        }
-
-        DesiredCapabilities capabilities = setCapabilities();
-
-        driver = new RemoteWebDriver(seleniumHubUrl, capabilities);
 
         // Maximise the window and enable the driver to upload files
         try {
             if (driverOS != operatingSystems.IOS && driverOS != operatingSystems.ANDROID) {
                 driver.manage().window().maximize();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Not all browsers support maximizing the screen so just catch any
             // exceptions and carry on
             System.out.println("Unable to maximize screen");
         }
+
         driver.setFileDetector(new LocalFileDetector());
 
         System.out.println("Starting new " + driver.getCapabilities().getBrowserName() + " driver on " + driver.getCapabilities().getPlatform() + " node");
@@ -414,7 +443,9 @@ public class DriverWrapper {
                 }
             }
 
-            return null;
+            // If we can't find a match then default to local
+            System.out.println("Unable to match operating system, defaulting to LOCAL");
+            return LOCAL;
         }
     }
 }
