@@ -64,7 +64,17 @@ public class DriverWrapper {
      * @param browser
      * @param os
      */
-    private void setup(browsers browser, operatingSystems os){
+    private void setup(browsers browser, operatingSystems os) {
+
+        Properties props = new Properties();
+
+        try {
+            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            props.load(input);
+        } catch (IOException e) {
+            // Pretend nothing happened and carry on
+            // TODO
+        }
 
         // OS isn't critical, but we do need the user to specify a browser so we'll throw an exception if they haven't
         if (browser == null) {
@@ -82,18 +92,22 @@ public class DriverWrapper {
 
                     // TODO get driver locations from config
                     case FIREFOX:
+                        System.setProperty("webdriver.gecko.driver", props.getProperty("gecko_driver_location"));
                         driver = new FirefoxDriver();
                         break;
 
                     case CHROME:
+                        System.setProperty("webdriver.chrome.driver", props.getProperty("chrome_driver_location"));
                         driver = new ChromeDriver();
                         break;
 
                     case IE11:
+                        System.setProperty("webdriver.ie.driver", props.getProperty("ie_driver_location"));
                         driver = new InternetExplorerDriver();
                         break;
 
                     case EDGE:
+                        System.setProperty("webdriver.edge.driver", props.getProperty("edge_driver_location"));
                         driver = new EdgeDriver();
                         break;
 
@@ -107,11 +121,6 @@ public class DriverWrapper {
                 URL seleniumHubUrl;
 
                 try {
-
-                    InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
-                    Properties props = new Properties();
-                    props.load(input);
-
                     seleniumHubUrl = new URL(props.getProperty("hub_url"));
                 } catch (IOException e) {
                     throw new IllegalStateException("Selenium Hub URL invalid or not set");
