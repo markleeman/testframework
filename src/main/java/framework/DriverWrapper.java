@@ -36,7 +36,7 @@ public class DriverWrapper {
      * @param browser
      * @param os
      */
-    DriverWrapper(browsers browser, operatingSystems os){
+    public DriverWrapper(browsers browser, operatingSystems os){
         setup(browser, os);
     }
 
@@ -44,7 +44,7 @@ public class DriverWrapper {
      * Create a new driver by explicitly stating the browser we want and running locally
      * @param browser
      */
-    DriverWrapper(browsers browser){
+    public DriverWrapper(browsers browser){
         setup(browser, operatingSystems.LOCAL);
     }
 
@@ -73,7 +73,7 @@ public class DriverWrapper {
             props.load(input);
         } catch (IOException e) {
             // Pretend nothing happened and carry on
-            // TODO
+            // TODO something helpful
         }
 
         // OS isn't critical, but we do need the user to specify a browser so we'll throw an exception if they haven't
@@ -86,6 +86,8 @@ public class DriverWrapper {
 
         switch(os) {
 
+            // TODO if the user hasn't supplied an os then it's more likely that they want to run locally so LOCAL
+            // should be the default case
             case LOCAL:
 
                 switch(browser) {
@@ -115,6 +117,7 @@ public class DriverWrapper {
                         driver = new SafariDriver();
                         break;
                 }
+                break;
 
             default:
 
@@ -129,9 +132,10 @@ public class DriverWrapper {
                 DesiredCapabilities capabilities = setCapabilities();
 
                 driver = new RemoteWebDriver(seleniumHubUrl, capabilities);
+                driver.setFileDetector(new LocalFileDetector());
         }
 
-        // Maximise the window and enable the driver to upload files
+        // Maximise the window
         try {
             if (driverOS != operatingSystems.IOS && driverOS != operatingSystems.ANDROID) {
                 driver.manage().window().maximize();
@@ -141,8 +145,6 @@ public class DriverWrapper {
             // exceptions and carry on
             System.out.println("Unable to maximize screen");
         }
-
-        driver.setFileDetector(new LocalFileDetector());
 
         System.out.println("Starting new " + driver.getCapabilities().getBrowserName() + " driver on " + driver.getCapabilities().getPlatform() + " node");
     }
@@ -200,7 +202,7 @@ public class DriverWrapper {
      * Our tests should never interact with the driver directly but we'll provide a method for the
      * page objects to get at it
      */
-    protected WebDriver getDriver(){
+    public WebDriver getDriver(){
         return driver;
     }
 

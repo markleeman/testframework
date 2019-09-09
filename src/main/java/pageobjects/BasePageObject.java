@@ -3,14 +3,33 @@ package pageobjects;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * Basic page object class containing methods which are applicable to any web page
  */
 public class BasePageObject {
 
-    WebDriver driver;
+    protected WebDriver driver;
+    protected String BASE_URL;
 
     protected By browserError = By.cssSelector("browser:error");
+
+    protected BasePageObject() {
+        Properties props = new Properties();
+
+        try {
+            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            props.load(input);
+        } catch (IOException e) {
+            // Pretend nothing happened and carry on
+            // TODO something helpful
+        }
+
+        BASE_URL = props.getProperty("base_url");
+    }
 
     /**
      * Checks the current page title against an array of possible values to give us some assurance we are on the
@@ -20,16 +39,19 @@ public class BasePageObject {
     protected void selfCheckPageTitleContains(String[] pageTitle) {
 
         boolean titleMatch = false;
+        String expectedValues = "";
 
         for (String title : pageTitle) {
 
-            if (! driver.getTitle().contains(title)) {
+            expectedValues += "Expected:\t" + title;
+
+            if (driver.getTitle().contains(title)) {
                 titleMatch = true;
             }
         }
 
         if (! titleMatch) {
-            throw new IllegalStateException("Page title does not match");
+            throw new IllegalStateException("Page title does not match\nFound:\t" + driver.getTitle() + "\n" + expectedValues);
         }
     }
 
@@ -58,5 +80,10 @@ public class BasePageObject {
      */
     public boolean isBrowserErrorPresent() {
         return getNumBrowserErrors() > 0;
+    }
+
+    protected void setText(By element, String text) {
+        driver.findElement(element).clear();
+        driver.findElement(element).sendKeys(text);
     }
 }
