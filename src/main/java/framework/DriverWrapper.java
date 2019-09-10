@@ -146,7 +146,7 @@ public class DriverWrapper {
             System.out.println("Unable to maximize screen");
         }
 
-        System.out.println("Starting new " + driver.getCapabilities().getBrowserName() + " driver on " + driver.getCapabilities().getPlatform() + " node");
+        System.out.println("Starting new " + driver.getCapabilities().getBrowserName() + " driver on " + driver.getCapabilities().getPlatform());
     }
 
     /**

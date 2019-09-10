@@ -1,12 +1,16 @@
 package pageobjects;
 
 import framework.DriverWrapper;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class EmailSent extends BasePageObject{
 
     public final String PAGE_URL = BASE_URL + "email_sent";
     public final String[] PAGE_TITLE = {"The Internet"};
+
+    protected final By messageDiv = By.id("content");
 
     /**
      * Constructor used by tests to perform an initial page load
@@ -25,5 +29,11 @@ public class EmailSent extends BasePageObject{
     protected EmailSent(WebDriver driver) {
         this.driver = driver;
         selfCheckPageTitleContains(PAGE_TITLE);
+    }
+
+    public String getMessageText() {
+
+        // TODO wait for element
+        return driver.findElement(messageDiv).getText();
     }
 }
