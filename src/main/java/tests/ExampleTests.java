@@ -16,7 +16,7 @@ public class ExampleTests {
 
     @BeforeClass
     public void setup() {
-        driver = new DriverWrapper(DriverWrapper.browsers.FIREFOX, DriverWrapper.operatingSystems.LOCAL);
+        driver = new DriverWrapper(DriverWrapper.browsers.CHROME, DriverWrapper.operatingSystems.LOCAL);
     }
 
     @Test

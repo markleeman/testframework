@@ -38,6 +38,7 @@ public class BasePageObject {
      */
     protected void selfCheckPageTitleContains(String[] pageTitle) {
 
+        // TODO IE can be a little slow so we should add a wait to this
         boolean titleMatch = false;
         String expectedValues = "";
 

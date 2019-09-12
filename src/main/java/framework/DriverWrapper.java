@@ -31,6 +31,10 @@ public class DriverWrapper {
     private browsers driverBrowser;
     private operatingSystems driverOS;
 
+    private final String geckoDriver = "geckodriver";
+    private final String chromeDriver = "chromedriver";
+    private final String ieDriver = "IEDriverServer";
+
     /**
      * Create a new driver by explicitly stating the browser and OS we want
      * @param browser
@@ -90,26 +94,30 @@ public class DriverWrapper {
             // should be the default case
             case LOCAL:
 
+                String fileExtension = "";
+
+                if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                    fileExtension = ".exe";
+                }
+
                 switch(browser) {
 
-                    // TODO get driver locations from config
                     case FIREFOX:
-                        System.setProperty("webdriver.gecko.driver", props.getProperty("gecko_driver_location"));
+                        System.setProperty("webdriver.gecko.driver", props.getProperty("driver_folder") + geckoDriver + fileExtension);
                         driver = new FirefoxDriver();
                         break;
 
                     case CHROME:
-                        System.setProperty("webdriver.chrome.driver", props.getProperty("chrome_driver_location"));
+                        System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
                         driver = new ChromeDriver();
                         break;
 
                     case IE11:
-                        System.setProperty("webdriver.ie.driver", props.getProperty("ie_driver_location"));
+                        System.setProperty("webdriver.ie.driver", props.getProperty("driver_folder") + ieDriver + fileExtension);
                         driver = new InternetExplorerDriver();
                         break;
 
                     case EDGE:
-                        System.setProperty("webdriver.edge.driver", props.getProperty("edge_driver_location"));
                         driver = new EdgeDriver();
                         break;
 
