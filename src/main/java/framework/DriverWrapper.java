@@ -3,7 +3,9 @@ package framework;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
@@ -107,6 +109,16 @@ public class DriverWrapper {
                         driver = new FirefoxDriver();
                         break;
 
+                    case CHROME_HEADLESS:
+                        System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        chromeOptions.addArguments("--no-sandbox");
+                        chromeOptions.addArguments("--headless");
+                        chromeOptions.addArguments("disable-gpu");
+                        chromeOptions.addArguments("window-size=1920,1200");
+                        driver = new ChromeDriver(chromeOptions);
+                        break;
+
                     case CHROME:
                         System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
                         driver = new ChromeDriver();
@@ -118,7 +130,8 @@ public class DriverWrapper {
                         break;
 
                     case EDGE:
-                        driver = new EdgeDriver();
+                        EdgeOptions edgeOptions = new EdgeOptions();
+                        driver = new EdgeDriver(edgeOptions);
                         break;
 
                     case SAFARI:
@@ -413,6 +426,7 @@ public class DriverWrapper {
     public enum browsers {
         FIREFOX ("firefox"),
         CHROME ("chrome"),
+        CHROME_HEADLESS ("chrome_headless"),
         SAFARI ("safari"),
         IE11 ("iexplore"),
         EDGE ("edge");
