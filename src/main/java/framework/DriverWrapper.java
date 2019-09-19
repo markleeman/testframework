@@ -125,11 +125,26 @@ public class DriverWrapper {
                         break;
 
                     case IE11:
+                        // Don't forget to set the below registry key or we'll keep loosing the connection to the browser
+                        // For 32bit machines
+                        // HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BFCACHE
+                        // For 64bit machines
+                        // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BFCACHE
+                        // FEATURE_BFCACHE sub-key should contain a DWORD value named iexplore.exe with the value of 0
+                        // Additionally, the Protected Mode value must the same for all zones under Internet options -> Security
+                        // TODO include this in a readme
                         System.setProperty("webdriver.ie.driver", props.getProperty("driver_folder") + ieDriver + fileExtension);
                         driver = new InternetExplorerDriver();
                         break;
 
                     case EDGE:
+                        // Edge driver for versions 18+ is now an optional feature in windows.
+                        // Search for Manage Optional Features and add Microsoft Webdriver
+                        // Domain joined computers may have to bypass their WSUS server before this can be installed by
+                        // editing the following registry key
+                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+                        // If UseWUServer exists set it's value to 0, then restart and install Microsoft Webdriver normally
+                        // TODO include this in a readme
                         EdgeOptions edgeOptions = new EdgeOptions();
                         driver = new EdgeDriver(edgeOptions);
                         break;
