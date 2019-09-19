@@ -20,8 +20,30 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <framework.browser>${framework.browser}</framework.browser>
+                        <framework.os>${framework.os}</framework.os>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>Example</id>
+            <properties>
+                <framework.browser>chrome_headless</framework.browser>
+                <framework.os>localhost</framework.os>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -55,6 +77,5 @@
             <version>1.0.0</version>
         </dependency>
     </dependencies>
-
 
 </project>
