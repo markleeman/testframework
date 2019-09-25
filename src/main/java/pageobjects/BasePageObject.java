@@ -1,7 +1,10 @@
 package pageobjects;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,26 +36,23 @@ public class BasePageObject {
 
     /**
      * Checks the current page title against an array of possible values to give us some assurance we are on the
-     * correct page before we do anything
-     * @param pageTitle String array of possible page titles to check against the current page
+     * correct page before we do anything.  Some browsers can be a little slow or the title could be changed by JS
+     * so we'll keep checking for a few seconds before we fail
+     * @param pageTitles String array of possible page titles to check against the current page
      */
-    protected void selfCheckPageTitleContains(String[] pageTitle) {
+    protected void selfCheckPageTitleContains(String[] pageTitles) {
 
-        // TODO IE can be a little slow so we should add a wait to this
-        boolean titleMatch = false;
-        String expectedValues = "";
-
-        for (String title : pageTitle) {
-
-            expectedValues += "Expected:\t" + title;
-
-            if (driver.getTitle().contains(title)) {
-                titleMatch = true;
-            }
+        try {
+            waitForPageTitle(pageTitles, 5);
         }
+        catch (TimeoutException e) {
+            StringBuilder expectedTitles = new StringBuilder();
 
-        if (! titleMatch) {
-            throw new IllegalStateException("Page title does not match\nFound:\t" + driver.getTitle() + "\n" + expectedValues);
+            for (String title : pageTitles) {
+                expectedTitles.append("Expected:\t").append(title).append("\n");
+            }
+
+            throw new IllegalStateException("Page title does not match\nFound:\t" + driver.getTitle() + "\n" + expectedTitles);
         }
     }
 
@@ -86,5 +86,21 @@ public class BasePageObject {
     protected void setText(By element, String text) {
         driver.findElement(element).clear();
         driver.findElement(element).sendKeys(text);
+    }
+
+    public void waitForPageTitle(String[] expectedTitles, int timeOut) {
+        WebDriverWait wait = new WebDriverWait(driver, timeOut);
+        wait.until((ExpectedCondition<Boolean>) driver -> {
+
+            boolean titleMatches = false;
+
+            for(String expectedTitle : expectedTitles){
+                if (driver.getTitle().contains(expectedTitle)){
+                    titleMatches = true;
+                }
+            }
+
+            return titleMatches;
+        });
     }
 }
