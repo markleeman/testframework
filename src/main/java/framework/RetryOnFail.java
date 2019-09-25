@@ -13,7 +13,7 @@ public class RetryOnFail implements IRetryAnalyzer  {
     private int maxCount = 2; // Number of re-try attempts
 
     public boolean isRetryAvailable() {
-        return count <= ((Boolean.parseBoolean((System.getProperty("testframework.debugMode")))) ? 0 : maxCount);
+        return count <= ((Boolean.parseBoolean((System.getProperty("framework.debugMode")))) ? 0 : maxCount);
     }
 
     @Override

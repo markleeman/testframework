@@ -37,7 +37,7 @@ public class ForgotPassword extends BasePageObject {
     }
 
     public EmailSent submitFormWithButton() {
-        driver.findElement(submitButton).click();
+        clickElement(emailField);
         return new EmailSent(driver);
     }
 
