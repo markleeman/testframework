@@ -7,7 +7,8 @@ public class Util {
     private static final int DEFAULT_LENGTH = 10;
 
     public static String getValidEmail(){
-        return getRandomString() + "@example.com"; // TODO get the domain from a config file
+
+        return getRandomString() + new PropertyManager().getEmailDomain();
     }
 
     public static String getRandomString(){

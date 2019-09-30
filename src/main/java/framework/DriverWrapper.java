@@ -19,9 +19,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -75,16 +73,8 @@ public class DriverWrapper {
      */
     private void setup() {
 
-        Properties props = new Properties();
-
-        // TODO properties should be loaded into a separate property manager class
-        try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
-            props.load(input);
-        } catch (IOException e) {
-            // Pretend nothing happened and carry on
-            // TODO something helpful
-        }
+        // TODO set the environment
+        PropertyManager props = new PropertyManager();
 
         // If no browser has been specified throw an exception
         if (driverBrowser == null) {
@@ -95,7 +85,7 @@ public class DriverWrapper {
             URL seleniumHubUrl;
 
             try {
-                seleniumHubUrl = new URL(props.getProperty("hub_url"));
+                seleniumHubUrl = new URL(props.getHubURL());
             } catch (IOException e) {
                 throw new IllegalStateException("Selenium Hub URL invalid or not set");
             }
@@ -144,12 +134,12 @@ public class DriverWrapper {
             switch(driverBrowser) {
 
                 case FIREFOX:
-                    System.setProperty("webdriver.gecko.driver", props.getProperty("driver_folder") + geckoDriver + fileExtension);
+                    System.setProperty("webdriver.gecko.driver", props.getDriverFolder() + geckoDriver + fileExtension);
                     driver = new FirefoxDriver();
                     break;
 
                 case CHROME_HEADLESS:
-                    System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
+                    System.setProperty("webdriver.chrome.driver", props.getDriverFolder() + chromeDriver + fileExtension);
                     ChromeOptions chromeOptions = new ChromeOptions();
                     chromeOptions.setHeadless(true);
                     chromeOptions.addArguments("window-size=1920,1200");
@@ -157,7 +147,7 @@ public class DriverWrapper {
                     break;
 
                 case CHROME:
-                    System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
+                    System.setProperty("webdriver.chrome.driver", props.getDriverFolder() + chromeDriver + fileExtension);
                     driver = new ChromeDriver();
                     break;
 
@@ -170,7 +160,7 @@ public class DriverWrapper {
                     // FEATURE_BFCACHE sub-key should contain a DWORD value named iexplore.exe with the value of 0
                     // Additionally, the Protected Mode value must the same for all zones under Internet options -> Security
                     // TODO include this in a readme
-                    System.setProperty("webdriver.ie.driver", props.getProperty("driver_folder") + ieDriver + fileExtension);
+                    System.setProperty("webdriver.ie.driver", props.getDriverFolder() + ieDriver + fileExtension);
                     driver = new InternetExplorerDriver();
                     break;
 

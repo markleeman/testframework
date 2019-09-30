@@ -1,13 +1,12 @@
 package pageobjects;
 
-import org.openqa.selenium.*;
+import framework.PropertyManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * Basic page object class containing methods which are applicable to any web page
@@ -16,21 +15,14 @@ public class BasePageObject {
 
     protected WebDriver driver;
     protected String BASE_URL;
+    protected PropertyManager props;
 
     protected By browserError = By.cssSelector("browser:error");
 
     protected BasePageObject() {
-        Properties props = new Properties();
 
-        try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
-            props.load(input);
-        } catch (IOException e) {
-            // Pretend nothing happened and carry on
-            // TODO something helpful
-        }
-
-        BASE_URL = props.getProperty("base_url");
+        props = new PropertyManager();
+        BASE_URL = props.getBaseURL();
     }
 
     /**
