@@ -363,56 +363,6 @@ public class DriverWrapper {
         }
     }
 
-    public void clickElement(WebElement element){
-
-        // Selenium _should_ scroll the element to be clicked into view, but we'll do so explicitly
-
-        if (driver == null){
-            throw new IllegalStateException("Driver has not been initialized");
-        }
-
-        JavascriptExecutor jse = driver;
-
-        try {
-            jse.executeScript("arguments[0].scrollIntoView(false)", element);
-        }
-        catch (NullPointerException e) { /* Keep going */ }
-
-        try {
-            element.click();
-        }
-        catch (WebDriverException e){
-            // Something has prevented us clicking on the element, usually because a dialog hasn't finished
-            // animating yet, so we'll try again using JavaScript
-            jse.executeScript("arguments[0].click();", element);
-        }
-    }
-
-    public void clickElement(By locator){
-        if (locator != null) {
-            clickElement(driver.findElement(locator));
-        }
-        else{
-            throw new IllegalStateException("Element locator cannot be null");
-        }
-    }
-
-    public void clickElementAndWaitForElementToBeClickable(By clickOnElement, By waitForElement){
-
-        clickElement(clickOnElement);
-
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.elementToBeClickable(waitForElement));
-    }
-
-    public void clickElementAndWaitForElementToBePresent(By clickOnElement, By waitForElement){
-
-        clickElement(clickOnElement);
-
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.presenceOfElementLocated(waitForElement));
-    }
-
     /**
      * Web browsers supported by the framework
      */
