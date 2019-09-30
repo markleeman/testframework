@@ -1,7 +1,9 @@
 package framework;
 
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -10,12 +12,11 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
+import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,6 @@ public class DriverWrapper {
      */
     private void setup() {
 
-        // TODO set the environment
         PropertyManager props = new PropertyManager();
 
         // If no browser has been specified throw an exception
@@ -210,7 +210,7 @@ public class DriverWrapper {
      * Our tests should never interact with the driver directly but we'll provide a method for the
      * page objects to get at it
      */
-    public WebDriver getDriver(){
+    public RemoteWebDriver getDriver(){
         return driver;
     }
 
@@ -290,79 +290,15 @@ public class DriverWrapper {
     }
 
     /**
-     * Test environments frequently have invalid security certs which most browsers will ignore with the
-     * ACCEPT_INSECURE_CERTS capability.  This doesn't work with IE and Edge however, so this method will
-     * detect the security warning these browsers throw up and accept them.  It should only be needed for the
-     * initial page load as once the warnings have been dismissed the browser will accept the certs for the
-     * remainder of the session.
-     */
-    protected void loadPageAndDealWithCertWarnings(String pageURL){
-
-        WebDriverWait fiveSecWait = new WebDriverWait(driver, 5);
-
-        try {
-            driver.get(pageURL);
-        }
-        catch(UnhandledAlertException e){
-            driver.switchTo().alert().accept();
-        }
-
-        // Handling for security alerts in IE11
-        if (driverBrowser.equals(browsers.IE11)) {
-
-            // IE will occasionally throw up a security alert because of self signed certs
-            try {
-                fiveSecWait.until(ExpectedConditions.or(ExpectedConditions.alertIsPresent(), ExpectedConditions.titleContains("Certificate Error:")));
-
-                try {
-                    driver.switchTo().alert().accept();
-                    fiveSecWait.until(ExpectedConditions.not(ExpectedConditions.titleContains("This page can’t be displayed")));
-                }
-                catch(NoAlertPresentException e) { /* No alert present */ }
-
-                if (driver.getTitle().contains("Certificate Error:")){
-                    try {
-                        driver.findElement(By.id("overridelink")).click();
-
-                        // And then it might occasionally throw up a security alert
-                        Alert securityAlert = fiveSecWait.until(ExpectedConditions.alertIsPresent());
-                        securityAlert.accept();
-                    }
-                    catch (NoSuchElementException e){ /* No alert present */ }
-                    catch(TimeoutException e){ /* No alert present */ }
-                    catch(NoAlertPresentException e) { /* No alert present */ }
-                }
-
-            }
-            catch(TimeoutException e){ /* No alert present */ }
-        }
-
-        // Handling for security alerts in Edge
-        else if (driverBrowser.equals(browsers.EDGE)) {
-
-            if (driver.getTitle().contains("Certificate Error:")){
-                try {
-                    driver.findElement(By.id("moreInformationDropdownSpan")).click();
-
-                    fiveSecWait.until(ExpectedConditions.presenceOfElementLocated(By.id("invalidcert_continue")));
-
-                    driver.findElement(By.id("invalidcert_continue")).click();
-                }
-                catch (NoSuchElementException e){ /* No alert present */ }
-            }
-        }
-    }
-
-    /**
      * Web browsers supported by the framework
      */
     public enum browsers {
-        FIREFOX ("firefox"),
-        CHROME ("chrome"),
+        FIREFOX (BrowserType.FIREFOX),
+        CHROME (BrowserType.CHROME),
         CHROME_HEADLESS ("chrome_headless"),
-        SAFARI ("safari"),
-        IE11 ("iexplore"),
-        EDGE ("edge");
+        SAFARI (BrowserType.SAFARI),
+        IE11 (BrowserType.IEXPLORE),
+        EDGE (BrowserType.EDGE);
 
         public final String browserName;
 

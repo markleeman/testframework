@@ -1,9 +1,9 @@
 package pageobjects;
 
 import framework.PropertyManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
+import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -13,7 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class BasePageObject {
 
-    protected WebDriver driver;
+    protected RemoteWebDriver driver;
     protected String BASE_URL;
     protected PropertyManager props;
 
@@ -116,6 +116,70 @@ public class BasePageObject {
     protected void setText(By element, String text) {
         driver.findElement(element).clear();
         driver.findElement(element).sendKeys(text);
+    }
+
+    /**
+     * Test environments frequently have invalid security certs which most browsers will ignore with the
+     * ACCEPT_INSECURE_CERTS capability.  This doesn't work with IE and Edge however, so this method will
+     * detect the security warning these browsers throw up and accept them.  It should only be needed for the
+     * initial page load as once the warnings have been dismissed the browser will accept the certs for the
+     * remainder of the session.
+     */
+    protected void loadPageAndDealWithCertWarnings(String pageURL){
+
+        WebDriverWait fiveSecWait = new WebDriverWait(driver, 5);
+
+        try {
+            driver.get(pageURL);
+        }
+        catch(UnhandledAlertException e){
+            driver.switchTo().alert().accept();
+        }
+
+        // Handling for security alerts in IE11
+        if (driver.getCapabilities().getBrowserName().equals(BrowserType.IEXPLORE)) {
+
+            // IE will occasionally throw up a security alert because of self signed certs
+            try {
+                fiveSecWait.until(ExpectedConditions.or(ExpectedConditions.alertIsPresent(), ExpectedConditions.titleContains("Certificate Error:")));
+
+                try {
+                    driver.switchTo().alert().accept();
+                    fiveSecWait.until(ExpectedConditions.not(ExpectedConditions.titleContains("This page can’t be displayed")));
+                }
+                catch(NoAlertPresentException e) { /* No alert present */ }
+
+                if (driver.getTitle().contains("Certificate Error:")){
+                    try {
+                        driver.findElement(By.id("overridelink")).click();
+
+                        // And then it might occasionally throw up a security alert
+                        Alert securityAlert = fiveSecWait.until(ExpectedConditions.alertIsPresent());
+                        securityAlert.accept();
+                    }
+                    catch (NoSuchElementException e){ /* No alert present */ }
+                    catch(TimeoutException e){ /* No alert present */ }
+                    catch(NoAlertPresentException e) { /* No alert present */ }
+                }
+
+            }
+            catch(TimeoutException e){ /* No alert present */ }
+        }
+
+        // Handling for security alerts in Edge
+        else if (driver.getCapabilities().getBrowserName().equals(BrowserType.EDGE)) {
+
+            if (driver.getTitle().contains("Certificate Error:")){
+                try {
+                    driver.findElement(By.id("moreInformationDropdownSpan")).click();
+
+                    fiveSecWait.until(ExpectedConditions.presenceOfElementLocated(By.id("invalidcert_continue")));
+
+                    driver.findElement(By.id("invalidcert_continue")).click();
+                }
+                catch (NoSuchElementException e){ /* No alert present */ }
+            }
+        }
     }
 
     /**

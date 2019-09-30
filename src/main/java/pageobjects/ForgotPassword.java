@@ -2,7 +2,7 @@ package pageobjects;
 
 import framework.DriverWrapper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class ForgotPassword extends BasePageObject {
 
@@ -26,7 +26,7 @@ public class ForgotPassword extends BasePageObject {
      * Constructor used by other page objects as we navigate around a site
      * @param driver
      */
-    protected ForgotPassword(WebDriver driver) {
+    protected ForgotPassword(RemoteWebDriver driver) {
         this.driver = driver;
         selfCheckPageTitleContains(PAGE_TITLE);
     }

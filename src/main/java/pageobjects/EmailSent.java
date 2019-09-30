@@ -2,7 +2,9 @@ package pageobjects;
 
 import framework.DriverWrapper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class EmailSent extends BasePageObject{
 
@@ -25,14 +27,16 @@ public class EmailSent extends BasePageObject{
      * Constructor used by other page objects as we navigate around a site
      * @param driver
      */
-    protected EmailSent(WebDriver driver) {
+    protected EmailSent(RemoteWebDriver driver) {
         this.driver = driver;
         selfCheckPageTitleContains(PAGE_TITLE);
     }
 
     public String getMessageText() {
 
-        // TODO wait for element
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        wait.until(ExpectedConditions.presenceOfElementLocated(messageDiv));
+
         return driver.findElement(messageDiv).getText();
     }
 }
