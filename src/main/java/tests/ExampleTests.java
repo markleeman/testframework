@@ -3,7 +3,6 @@ package tests;
 import customobjects.User;
 import framework.DriverWrapper;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pageobjects.EmailSent;
 import pageobjects.ForgotPassword;
@@ -18,7 +17,7 @@ public class ExampleTests {
     @Test
     public void passwordReset(){
 
-        driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS, DriverWrapper.operatingSystems.LOCAL);
+        driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS, false);
 
         String confirmMessage = "Your e-mail's been sent!";
 

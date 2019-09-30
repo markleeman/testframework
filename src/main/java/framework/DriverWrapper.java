@@ -7,12 +7,13 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -31,19 +32,21 @@ public class DriverWrapper {
 
     private RemoteWebDriver driver;
     private browsers driverBrowser;
-    private operatingSystems driverOS;
+    private boolean useGrid;
 
     private final String geckoDriver = "geckodriver";
     private final String chromeDriver = "chromedriver";
     private final String ieDriver = "IEDriverServer";
 
     /**
-     * Create a new driver by explicitly stating the browser and OS we want
+     * Create a new driver by explicitly stating the browser we want
      * @param browser
-     * @param os
+     * @param useSeleniumGrid
      */
-    public DriverWrapper(browsers browser, operatingSystems os){
-        setup(browser, os);
+    public DriverWrapper(browsers browser, boolean useSeleniumGrid){
+        driverBrowser = browser;
+        useGrid = useSeleniumGrid;
+        setup();
     }
 
     /**
@@ -51,7 +54,9 @@ public class DriverWrapper {
      * @param browser
      */
     public DriverWrapper(browsers browser){
-        setup(browser, operatingSystems.LOCAL);
+        driverBrowser = browser;
+        useGrid = false;
+        setup();
     }
 
     /**
@@ -60,20 +65,19 @@ public class DriverWrapper {
     public static DriverWrapper createFromSystemProperties(){
 
         browsers browser = browsers.fromString(System.getProperty("framework.browser"));
-        operatingSystems os = operatingSystems.fromString(System.getProperty("framework.os"));
+        boolean useGrid = Boolean.parseBoolean(System.getProperty("framework.useSeleniumGrid"));
 
-        return new DriverWrapper(browser, os);
+        return new DriverWrapper(browser, useGrid);
     }
 
     /**
-     * Setup our new driver based on the supplied browser and os
-     * @param browser
-     * @param os
+     * Setup our new driver
      */
-    private void setup(browsers browser, operatingSystems os) {
+    private void setup() {
 
         Properties props = new Properties();
 
+        // TODO properties should be loaded into a separate property manager class
         try {
             InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
             props.load(input);
@@ -82,141 +86,119 @@ public class DriverWrapper {
             // TODO something helpful
         }
 
-        // OS isn't critical, but we do need the user to specify a browser so we'll throw an exception if they haven't
-        if (browser == null) {
+        // If no browser has been specified throw an exception
+        if (driverBrowser == null) {
             throw new IllegalStateException("No browser has been specified");
         }
 
-        driverBrowser = browser;
-        driverOS = os;
+        if (useGrid) {
+            URL seleniumHubUrl;
 
-        switch(os) {
+            try {
+                seleniumHubUrl = new URL(props.getProperty("hub_url"));
+            } catch (IOException e) {
+                throw new IllegalStateException("Selenium Hub URL invalid or not set");
+            }
 
-            // TODO if the user hasn't supplied an os then it's more likely that they want to run locally so LOCAL
-            // should be the default case
-            case LOCAL:
+            switch(driverBrowser) {
 
-                String fileExtension = "";
+                case FIREFOX:
+                    driver = new RemoteWebDriver(seleniumHubUrl, new FirefoxOptions());
+                    break;
 
-                if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                    fileExtension = ".exe";
-                }
+                case CHROME_HEADLESS:
+                    ChromeOptions chromeOptions = new ChromeOptions();
+                    chromeOptions.setHeadless(true);
+                    chromeOptions.addArguments("window-size=1920,1200");
+                    driver = new RemoteWebDriver(seleniumHubUrl, chromeOptions);
+                    break;
 
-                switch(browser) {
+                case CHROME:
+                    driver = new RemoteWebDriver(seleniumHubUrl, new ChromeOptions());
+                    break;
 
-                    case FIREFOX:
-                        System.setProperty("webdriver.gecko.driver", props.getProperty("driver_folder") + geckoDriver + fileExtension);
-                        driver = new FirefoxDriver();
-                        break;
+                case IE11:
+                    driver = new RemoteWebDriver(seleniumHubUrl, new InternetExplorerOptions());
+                    break;
 
-                    case CHROME_HEADLESS:
-                        System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
-                        ChromeOptions chromeOptions = new ChromeOptions();
-                        chromeOptions.addArguments("--no-sandbox");
-                        chromeOptions.addArguments("--headless");
-                        chromeOptions.addArguments("disable-gpu");
-                        chromeOptions.addArguments("window-size=1920,1200");
-                        driver = new ChromeDriver(chromeOptions);
-                        break;
+                case EDGE:
+                    driver = new RemoteWebDriver(seleniumHubUrl, new EdgeOptions());
+                    break;
 
-                    case CHROME:
-                        System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
-                        driver = new ChromeDriver();
-                        break;
+                case SAFARI:
+                    driver = new RemoteWebDriver(seleniumHubUrl, new SafariOptions());
+                    break;
+            }
 
-                    case IE11:
-                        // Don't forget to set the below registry key or we'll keep loosing the connection to the browser
-                        // For 32bit machines
-                        // HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BFCACHE
-                        // For 64bit machines
-                        // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BFCACHE
-                        // FEATURE_BFCACHE sub-key should contain a DWORD value named iexplore.exe with the value of 0
-                        // Additionally, the Protected Mode value must the same for all zones under Internet options -> Security
-                        // TODO include this in a readme
-                        System.setProperty("webdriver.ie.driver", props.getProperty("driver_folder") + ieDriver + fileExtension);
-                        driver = new InternetExplorerDriver();
-                        break;
+            driver.setFileDetector(new LocalFileDetector());
+        }
 
-                    case EDGE:
-                        // Edge driver for versions 18+ is now an optional feature in windows.
-                        // Search for Manage Optional Features and add Microsoft Webdriver
-                        // Domain joined computers may have to bypass their WSUS server before this can be installed by
-                        // editing the following registry key
-                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
-                        // If UseWUServer exists set it's value to 0, then restart and install Microsoft Webdriver normally
-                        // TODO include this in a readme
-                        EdgeOptions edgeOptions = new EdgeOptions();
-                        driver = new EdgeDriver(edgeOptions);
-                        break;
+        else {
 
-                    case SAFARI:
-                        driver = new SafariDriver();
-                        break;
-                }
-                break;
+            String fileExtension = "";
 
-            default:
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                fileExtension = ".exe";
+            }
 
-                URL seleniumHubUrl;
+            switch(driverBrowser) {
 
-                try {
-                    seleniumHubUrl = new URL(props.getProperty("hub_url"));
-                } catch (IOException e) {
-                    throw new IllegalStateException("Selenium Hub URL invalid or not set");
-                }
+                case FIREFOX:
+                    System.setProperty("webdriver.gecko.driver", props.getProperty("driver_folder") + geckoDriver + fileExtension);
+                    driver = new FirefoxDriver();
+                    break;
 
-                DesiredCapabilities capabilities = setCapabilities();
+                case CHROME_HEADLESS:
+                    System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
+                    ChromeOptions chromeOptions = new ChromeOptions();
+                    chromeOptions.setHeadless(true);
+                    chromeOptions.addArguments("window-size=1920,1200");
+                    driver = new ChromeDriver(chromeOptions);
+                    break;
 
-                driver = new RemoteWebDriver(seleniumHubUrl, capabilities);
-                driver.setFileDetector(new LocalFileDetector());
+                case CHROME:
+                    System.setProperty("webdriver.chrome.driver", props.getProperty("driver_folder") + chromeDriver + fileExtension);
+                    driver = new ChromeDriver();
+                    break;
+
+                case IE11:
+                    // Don't forget to set the below registry key or we'll keep loosing the connection to the browser
+                    // For 32bit machines
+                    // HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BFCACHE
+                    // For 64bit machines
+                    // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BFCACHE
+                    // FEATURE_BFCACHE sub-key should contain a DWORD value named iexplore.exe with the value of 0
+                    // Additionally, the Protected Mode value must the same for all zones under Internet options -> Security
+                    // TODO include this in a readme
+                    System.setProperty("webdriver.ie.driver", props.getProperty("driver_folder") + ieDriver + fileExtension);
+                    driver = new InternetExplorerDriver();
+                    break;
+
+                case EDGE:
+                    // Edge driver for versions 18+ is now an optional feature in windows.
+                    // Search for Manage Optional Features and add Microsoft Webdriver
+                    // Domain joined computers may have to bypass their WSUS server before this can be installed by
+                    // editing the following registry key
+                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+                    // If UseWUServer exists set it's value to 0, then restart and install Microsoft Webdriver normally
+                    // TODO include this in a readme
+                    EdgeOptions edgeOptions = new EdgeOptions();
+                    driver = new EdgeDriver(edgeOptions);
+                    break;
+
+                case SAFARI:
+                    // Need to Allow Remote Automation from the Develop menu
+                    // Develop menu needs to be enabled from Preferences -> Advanced
+                    // TODO include this in a readme
+                    driver = new SafariDriver();
+                    break;
+            }
         }
 
         // Maximise the window
-        try {
-            if (driverOS != operatingSystems.IOS && driverOS != operatingSystems.ANDROID) {
-                driver.manage().window().maximize();
-            }
-        } catch (Exception e) {
-            // Not all browsers support maximizing the screen so just catch any
-            // exceptions and carry on
-            System.out.println("Unable to maximize screen");
-        }
+        driver.manage().window().maximize();
 
-        System.out.println("Starting new " + driver.getCapabilities().getBrowserName() + " driver on " + driver.getCapabilities().getPlatform());
-    }
-
-    /**
-     * Specify the capabilities we want from our new driver
-     * @return Set of desired capabilities we can send to the Selenium Grid Hub, which will hopefully have a node to match
-     */
-    private DesiredCapabilities setCapabilities(){
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-
-        switch (driverBrowser){
-
-            case IE11:
-                capabilities = DesiredCapabilities.internetExplorer();
-                capabilities.setVersion("11");
-                capabilities.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION, true);
-                capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-                break;
-
-            case EDGE:
-                capabilities = DesiredCapabilities.edge();
-                break;
-
-            default:
-                capabilities.setBrowserName(driverBrowser.browserName);
-
-                if (driverOS != null) {
-                    capabilities.setPlatform(driverOS.platform);
-                }
-                capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-                capabilities.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
-                break;
-        }
-
-        return capabilities;
+        System.out.println("Starting new " + driver.getCapabilities().getBrowserName() + " driver");
     }
 
     // Make sure the driver is closed properly
@@ -301,10 +283,6 @@ public class DriverWrapper {
 
     public browsers getDriverBrowser(){
         return driverBrowser;
-    }
-
-    public operatingSystems getDriverOS(){
-        return driverOS;
     }
 
     public void takeScreenShot(String fullFilePath){
@@ -461,39 +439,6 @@ public class DriverWrapper {
             }
 
             return null;
-        }
-    }
-
-    /**
-     * Operating systems supported by the framework
-     */
-    public enum operatingSystems{
-        WINDOWS ("windows", Platform.WINDOWS),
-        MAC ("macos", Platform.MAC),
-        LINUX ("linux", Platform.LINUX),
-        IOS ("ios", Platform.IOS),
-        ANDROID ("android", Platform.ANDROID),
-        LOCAL ("localhost", null);
-
-        public final String osName;
-        public final Platform platform;
-
-        operatingSystems (String osName, Platform platform){
-            this.osName = osName;
-            this.platform = platform;
-        }
-
-        public static operatingSystems fromString(String stringValue) {
-
-            for (operatingSystems system : operatingSystems.values()) {
-                if (system.osName.equalsIgnoreCase(stringValue)) {
-                    return system;
-                }
-            }
-
-            // If we can't find a match then default to local
-            System.out.println("Unable to match operating system, defaulting to LOCAL");
-            return LOCAL;
         }
     }
 }

@@ -28,7 +28,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <framework.browser>${framework.browser}</framework.browser>
-                        <framework.os>${framework.os}</framework.os>
+                        <framework.useSeleniumGrid>${framework.useSeleniumGrid}</framework.useSeleniumGrid>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -40,7 +40,7 @@
             <id>Example</id>
             <properties>
                 <framework.browser>chrome_headless</framework.browser>
-                <framework.os>localhost</framework.os>
+                <framework.useSeleniumGrid>false</framework.useSeleniumGrid>
             </properties>
         </profile>
     </profiles>
