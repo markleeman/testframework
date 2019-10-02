@@ -12,17 +12,19 @@ public class User {
     private String emailAddress;
     private String password;
     private String phoneNumber;
+    private String username;
 
-    public User (String firstName, String lastName, String emailAddress, String password, String phoneNumber) {
+    public User (String firstName, String lastName, String emailAddress, String password, String phoneNumber, String username) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress  = emailAddress;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.username = username;
     }
 
     public static User createNewRandomUser() {
-        return new User(Util.getRandomString(8), Util.getRandomString(8), Util.getValidEmail(), Util.getRandomString(8), Util.getRandomNumber(11));
+        return new User(Util.getRandomString(8), Util.getRandomString(8), Util.getValidEmail(), Util.getRandomString(8), Util.getRandomNumber(11), Util.getRandomString(8));
     }
 
     public String getFirstName() {
@@ -63,5 +65,13 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

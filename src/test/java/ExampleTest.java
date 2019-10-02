@@ -4,6 +4,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import pageobjects.EmailSent;
 import pageobjects.ForgotPassword;
+import pageobjects.LoginPage;
+import pageobjects.SecureArea;
 
 import static org.testng.Assert.assertTrue;
 
@@ -11,7 +13,7 @@ public class ExampleTest {
 
     private DriverWrapper driver;
 
-    // Example test using an explicitly defined browser and os
+    // Example test using an explicitly defined browser and Selenium Grid option
     @Test
     public void passwordReset(){
 
@@ -28,22 +30,40 @@ public class ExampleTest {
         assertTrue(reset.getMessageText().contains(confirmMessage));
     }
 
-    // Example test using system properties to specify the browser and os
+    // Example test using an explicitly defined browser and default Selenium Grid option
     @Test
-    public void test2(){
+    public void invalidUsername(){
 
-        // TODO Test something else...
-        driver = DriverWrapper.createFromSystemProperties();
+        driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS);
 
-        String confirmMessage = "Your e-mail's been sent!";
+        String errorMessage = "Your username is invalid!";
 
         User testUser = User.createNewRandomUser();
 
-        EmailSent reset = new ForgotPassword(driver)
-                .enterEmail(testUser.getEmailAddress())
-                .submitFormWithButton();
+        LoginPage login = new LoginPage(driver)
+                .enterUserDetails(testUser)
+                .loginExpectingError();
 
-        assertTrue(reset.getMessageText().contains(confirmMessage));
+        assertTrue(login.getMessageText().contains(errorMessage));
+    }
+
+    // Example test using system properties to specify the browser and os
+    @Test
+    public void validLogin(){
+
+        driver = DriverWrapper.createFromSystemProperties();
+
+        String loggedInMessage = "You logged into a secure area!";
+
+        User testUser = User.createNewRandomUser();
+        testUser.setUsername("tomsmith");
+        testUser.setPassword("SuperSecretPassword!");
+
+        SecureArea secure = new LoginPage(driver)
+                .enterUserDetails(testUser)
+                .loginExpectingSuccess();
+
+        assertTrue(secure.getMessageText().contains(loggedInMessage));
     }
 
     @AfterClass
