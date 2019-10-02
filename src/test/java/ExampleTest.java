@@ -1,5 +1,3 @@
-package tests;
-
 import customobjects.User;
 import framework.DriverWrapper;
 import org.testng.annotations.AfterClass;
@@ -9,7 +7,7 @@ import pageobjects.ForgotPassword;
 
 import static org.testng.Assert.assertTrue;
 
-public class ExampleTests {
+public class ExampleTest {
 
     private DriverWrapper driver;
 
