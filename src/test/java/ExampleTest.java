@@ -1,5 +1,7 @@
 import customobjects.User;
 import framework.DriverWrapper;
+import framework.PropertyManager;
+import framework.RestAPIHelper;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import pageobjects.EmailSent;
@@ -7,6 +9,7 @@ import pageobjects.ForgotPassword;
 import pageobjects.LoginPage;
 import pageobjects.SecureArea;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class ExampleTest {
@@ -15,7 +18,7 @@ public class ExampleTest {
 
     // Example test using an explicitly defined browser and Selenium Grid option
     @Test
-    public void passwordReset(){
+    public void passwordReset() {
 
         driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS, false);
 
@@ -32,9 +35,9 @@ public class ExampleTest {
 
     // Example test using an explicitly defined browser and default Selenium Grid option
     @Test
-    public void invalidUsername(){
+    public void invalidUsername() {
 
-        driver = new DriverWrapper(DriverWrapper.browsers.SAFARI);
+        driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS);
 
         String errorMessage = "Your username is invalid!";
 
@@ -49,7 +52,7 @@ public class ExampleTest {
 
     // Example test using system properties to specify the browser and os
     @Test
-    public void validLogin(){
+    public void validLogin() {
 
         driver = DriverWrapper.createFromSystemProperties();
 
@@ -66,8 +69,22 @@ public class ExampleTest {
         assertTrue(secure.getMessageText().contains(loggedInMessage));
     }
 
+    // Example test using the Rest API helper instead of a browser
+    @Test
+    public void getRequest() {
+
+        PropertyManager props = new PropertyManager();
+        String endpoint = props.getBaseURL() + "status_codes/404";
+
+        RestAPIHelper api = new RestAPIHelper();
+        api.makeGetRequest(endpoint, null);
+        assertEquals(api.getResponseCode(), 404);
+    }
+
     @AfterClass
     public void teardown() {
-        driver.shutDown();
+        if (driver != null) {
+            driver.shutDown();
+        }
     }
 }
