@@ -39,6 +39,8 @@ public class PropertyManager {
         return props.getProperty("email_domain");
     }
 
+    public String getScreenshotPath() { return props.getProperty("screenshot_path"); }
+
     public enum environment {
         TEST ("config.properties", "test"),
         STAGING ("config.properties", "staging"),

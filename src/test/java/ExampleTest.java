@@ -34,7 +34,7 @@ public class ExampleTest {
     @Test
     public void invalidUsername(){
 
-        driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS);
+        driver = new DriverWrapper(DriverWrapper.browsers.SAFARI);
 
         String errorMessage = "Your username is invalid!";
 

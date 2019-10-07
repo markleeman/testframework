@@ -275,14 +275,30 @@ public class DriverWrapper {
         return driverBrowser;
     }
 
-    public void takeScreenShot(String fullFilePath){
+    /**
+     * Saves a screenshot of the browser window with the provided filename.  The path to the screeshots folder
+     * should be specified in the config file
+     * @param imageName Filename for the screenshot without file extension
+     */
+    public void takeScreenShot(String imageName){
 
-        // TODO get screenshots folder from a properties file so we just need the file name as a parm
-        // TODO auto-increment filename if the file already exists
         File scrFile = driver.getScreenshotAs(OutputType.FILE);
 
+        String folderPath = new PropertyManager().getScreenshotPath();
+
+        int fileNum = 0;
+        File screenshot;
+
+        // Keep incrementing the file number until we get a unique filename
+        do {
+            // Write the image to a file
+            screenshot = new File(folderPath + File.separator + imageName + "-" + fileNum + ".png");
+            fileNum++;
+        }
+        while(screenshot.isFile());
+
         try {
-            FileUtils.copyFile(scrFile, new File(fullFilePath));
+            FileUtils.copyFile(scrFile, screenshot);
         } catch (IOException e) {
             System.out.println("Error saving screenshot");
             e.printStackTrace();
