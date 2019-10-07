@@ -76,7 +76,7 @@ public class BasePageObject {
 
     /**
      * Clicks on the element located by the provided By locator
-     * @param locator
+     * @param locator Locator for the element to click on
      */
     protected void clickElement(By locator){
         driver.findElement(locator).click();
@@ -84,8 +84,8 @@ public class BasePageObject {
 
     /**
      * Clicks on the element located by the provided By locator, and then waits for a second element to be in a clickable state
-     * @param clickOnElement
-     * @param waitForElement
+     * @param clickOnElement Locator for the element to click on
+     * @param waitForElement Locator for the element to wait for
      */
     protected void clickElementAndWaitForElementToBeClickable(By clickOnElement, By waitForElement){
 
@@ -97,8 +97,8 @@ public class BasePageObject {
 
     /**
      * Clicks on the element located by the provided By locator, and then waits for a second element to be present in the DOM
-     * @param clickOnElement
-     * @param waitForElement
+     * @param clickOnElement Locator for the element to click on
+     * @param waitForElement Locator for the element to wait for
      */
     protected void clickElementAndWaitForElementToBePresent(By clickOnElement, By waitForElement){
 
@@ -110,8 +110,8 @@ public class BasePageObject {
 
     /**
      * Sends the supplied keystrokes to the supplied element
-     * @param element
-     * @param text
+     * @param element Element to send keystrokes to
+     * @param text Keystrokes to send to the element
      */
     protected void setText(By element, String text) {
         driver.findElement(element).clear();
@@ -157,9 +157,7 @@ public class BasePageObject {
                         Alert securityAlert = fiveSecWait.until(ExpectedConditions.alertIsPresent());
                         securityAlert.accept();
                     }
-                    catch (NoSuchElementException e){ /* No alert present */ }
-                    catch(TimeoutException e){ /* No alert present */ }
-                    catch(NoAlertPresentException e) { /* No alert present */ }
+                    catch (NoSuchElementException | TimeoutException | NoAlertPresentException e){ /* No alert present */ }
                 }
 
             }
@@ -184,11 +182,11 @@ public class BasePageObject {
 
     /**
      * Keep check the page title for the supplied number of seconds until it matches one of the supplied strings
-     * @param expectedTitles
-     * @param timeOut
+     * @param expectedTitles Array of possible page titles
+     * @param timeOutSeconds Length of time in seconds we should wait for
      */
-    protected void waitForPageTitle(String[] expectedTitles, int timeOut) {
-        WebDriverWait wait = new WebDriverWait(driver, timeOut);
+    protected void waitForPageTitle(String[] expectedTitles, int timeOutSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, timeOutSeconds);
         wait.until((ExpectedCondition<Boolean>) driver -> {
 
             boolean titleMatches = false;

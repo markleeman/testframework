@@ -15,7 +15,7 @@ public class EmailSent extends BasePageObject{
 
     /**
      * Constructor used by tests to perform an initial page load
-     * @param wrapper
+     * @param wrapper DriverWrapper instance we should get the WebDriver instance from and use to load this page
      */
     public EmailSent(DriverWrapper wrapper) {
         this.driver = wrapper.getDriver();
@@ -25,7 +25,7 @@ public class EmailSent extends BasePageObject{
 
     /**
      * Constructor used by other page objects as we navigate around a site
-     * @param driver
+     * @param driver WebDriver instance which should already be on this page
      */
     protected EmailSent(RemoteWebDriver driver) {
         this.driver = driver;

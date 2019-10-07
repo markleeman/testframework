@@ -1,6 +1,5 @@
 package pageobjects;
 
-import framework.DriverWrapper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,7 +15,7 @@ public class SecureArea extends BasePageObject {
 
     /**
      * Constructor used by other page objects as we navigate around a site
-     * @param driver
+     * @param driver WebDriver instance which should already be on this page
      */
     protected SecureArea(RemoteWebDriver driver) {
         this.driver = driver;

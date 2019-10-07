@@ -24,12 +24,12 @@ public class Util {
     }
 
     /**
-     * Generate a random string with just numeric characters, with any leading zeros stripped
-     * @param numDigits
-     * @return
+     * Generate a random string with just numeric characters
+     * @param numDigits Number of digits our random number should contain
+     * @return String containing random numeric characters
      */
     public static String getRandomNumber(int numDigits) {
-
+        // TODO strip leading zeros
         return  RandomStringUtils.random(5);
     }
 }

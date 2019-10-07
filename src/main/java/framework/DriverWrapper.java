@@ -33,14 +33,10 @@ public class DriverWrapper {
     private browsers driverBrowser;
     private boolean useGrid;
 
-    private final String geckoDriver = "geckodriver";
-    private final String chromeDriver = "chromedriver";
-    private final String ieDriver = "IEDriverServer";
-
     /**
      * Create a new driver by explicitly stating the browser we want
-     * @param browser
-     * @param useSeleniumGrid
+     * @param browser Type of browser we want to startup
+     * @param useSeleniumGrid True if using a Selenium Grid, False if running locally
      */
     public DriverWrapper(browsers browser, boolean useSeleniumGrid){
         driverBrowser = browser;
@@ -50,7 +46,7 @@ public class DriverWrapper {
 
     /**
      * Create a new driver by explicitly stating the browser we want and running locally
-     * @param browser
+     * @param browser  Type of browser we want to startup
      */
     public DriverWrapper(browsers browser){
         driverBrowser = browser;
@@ -124,6 +120,10 @@ public class DriverWrapper {
         }
 
         else {
+
+            final String geckoDriver = "geckodriver";
+            final String chromeDriver = "chromedriver";
+            final String ieDriver = "IEDriverServer";
 
             String fileExtension = "";
 

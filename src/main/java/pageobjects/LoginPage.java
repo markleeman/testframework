@@ -4,9 +4,6 @@ import customobjects.User;
 import framework.DriverWrapper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import sun.rmi.runtime.Log;
 
 public class LoginPage extends BasePageObject {
 
@@ -20,7 +17,7 @@ public class LoginPage extends BasePageObject {
 
     /**
      * Constructor used by tests to perform an initial page load
-     * @param wrapper
+     * @param wrapper DriverWrapper instance we should get the WebDriver instance from and use to load this page
      */
     public LoginPage(DriverWrapper wrapper) {
         this.driver = wrapper.getDriver();
@@ -30,7 +27,7 @@ public class LoginPage extends BasePageObject {
 
     /**
      * Constructor used by other page objects as we navigate around a site
-     * @param driver
+     * @param driver WebDriver instance which should already be on this page
      */
     protected LoginPage(RemoteWebDriver driver) {
         this.driver = driver;
