@@ -2,12 +2,15 @@ import customobjects.User;
 import framework.DriverWrapper;
 import framework.PropertyManager;
 import framework.RestAPIHelper;
+import org.apache.http.message.BasicHeader;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import pageobjects.EmailSent;
 import pageobjects.ForgotPassword;
 import pageobjects.LoginPage;
 import pageobjects.SecureArea;
+
+import java.util.HashSet;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -69,16 +72,34 @@ public class ExampleTest {
         assertTrue(secure.getMessageText().contains(loggedInMessage));
     }
 
-    // Example test using the Rest API helper instead of a browser
+    // Example tests using the Rest API helper instead of a browser
     @Test
     public void getRequest() {
 
         PropertyManager props = new PropertyManager();
         String endpoint = props.getBaseURL() + "status_codes/404";
 
+        HashSet<BasicHeader> headers = new HashSet<BasicHeader>();
+        headers.add(new BasicHeader("Accept-Encoding", "gzip, deflate"));
+
         RestAPIHelper api = new RestAPIHelper();
-        api.makeGetRequest(endpoint, null);
+        api.submitGetRequest(endpoint, headers, null);
         assertEquals(api.getResponseCode(), 404);
+    }
+
+    @Test
+    public void postRequest() {
+
+        PropertyManager props = new PropertyManager();
+        String endpoint = props.getBaseURL() + "authenticate";
+
+        HashSet<BasicHeader> headers = new HashSet<BasicHeader>();
+        headers.add(new BasicHeader("Accept-Encoding", "gzip, deflate"));
+        headers.add(new BasicHeader("Content-Type", "application/x-www-form-urlencoded"));
+
+        RestAPIHelper api = new RestAPIHelper();
+        api.submitPostRequest(endpoint, headers, null, "username=tomsmith&password=SuperSecretPassword!");
+        assertEquals(api.getResponseCode(), 200);
     }
 
     @AfterClass
