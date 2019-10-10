@@ -1,113 +1,105 @@
 package framework;
 
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
 
-// TODO lots of duplicate code to cleanup
-
 /**
  * Simple helper class for a RESTful CRUD API
  */
 public class RestAPIHelper {
 
+    private BasicCookieStore requestCookies;
+    private HashSet<BasicHeader> requestHeaders;
     private CloseableHttpResponse response;
+    private String requestURL;
+    private String requestBody;
 
-    public void submitGetRequest(String url, HashSet<BasicHeader> headers, CookieStore cookies) {
-
-        response = null;
-
-        try {
-            // Create an HTTP client to submit our request with
-            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookies).build();
-
-            // Create the GET request
-            HttpGet getRequest = new HttpGet(url);
-
-            // Add headers
-            if (headers != null) { headers.forEach(getRequest::addHeader); }
-
-            // Submit the request and store the response
-            response = httpclient.execute(getRequest);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public RestAPIHelper() {
+        requestCookies = new BasicCookieStore();
+        requestHeaders = new HashSet<>();
     }
 
-    public void submitPostRequest(String url, HashSet<BasicHeader> headers, CookieStore cookies, String requestBody) {
-
-        response = null;
-
-        try {
-            // Create an HTTP client to submit our request with
-            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookies).build();
-
-            // Create the POST request
-            HttpPost request = new HttpPost(url);
-
-            // Add headers
-            if (headers != null) { headers.forEach(request::addHeader); }
-
-            // Add the body
-            if (requestBody != null) { request.setEntity(new StringEntity(requestBody)); }
-
-            // Submit the request and store the response
-            response = httpclient.execute(request);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void addRequestHeader(String name, String value) {
+        requestHeaders.add(new BasicHeader(name, value));
     }
 
-    public void submitDeleteRequest(String url, HashSet<BasicHeader> headers, CookieStore cookies) {
+    public void addRequestCookie(String name, String value, String domain, String path, boolean secure) {
+        BasicClientCookie cookie = new BasicClientCookie(name, value);
+        cookie.setDomain(domain);
+        cookie.setPath(path);
+        cookie.setSecure(secure);
 
-        response = null;
-
-        try {
-            // Create an HTTP client to submit our request with
-            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookies).build();
-
-            // Create the POST request
-            HttpDelete request = new HttpDelete(url);
-
-            // Add headers
-            if (headers != null) { headers.forEach(request::addHeader); }
-
-            // Submit the request and store the response
-            response = httpclient.execute(request);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        requestCookies.addCookie(cookie);
     }
 
-    public void submitPutRequest(String url, HashSet<BasicHeader> headers, CookieStore cookies, String requestBody) {
+    public void setRequestURL(String url) {
+        requestURL = url;
+    }
 
+    public void setRequestBody(String body) {
+        requestBody = body;
+    }
+
+    public void submitGetRequest() {
+        submitRequest(requestType.GET);
+    }
+
+    public void submitPostRequest() {
+        submitRequest(requestType.POST);
+    }
+
+    public void submitDeleteRequest() {
+        submitRequest(requestType.DELETE);
+    }
+
+    public void submitPutRequest() {
+        submitRequest(requestType.PUT);
+    }
+
+    private void submitRequest(requestType type) {
         response = null;
 
         try {
-            // Create an HTTP client to submit our request with
-            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookies).build();
+            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(requestCookies).build();
 
-            // Create the POST request
-            HttpPut request = new HttpPut(url);
+            switch(type){
 
-            // Add headers
-            if (headers != null) { headers.forEach(request::addHeader); }
+                case GET:
+                    HttpGet getRequest = new HttpGet(requestURL);
+                    if (requestHeaders != null) { requestHeaders.forEach(getRequest::addHeader); }
+                    response = httpclient.execute(getRequest);
+                    break;
 
-            // Add the body
-            if (requestBody != null) { request.setEntity(new StringEntity(requestBody)); }
+                case POST:
+                    HttpPost postRequest = new HttpPost(requestURL);
+                    if (requestHeaders != null) { requestHeaders.forEach(postRequest::addHeader); }
+                    if (requestBody != null) { postRequest.setEntity(new StringEntity(requestBody)); }
+                    response = httpclient.execute(postRequest);
+                    break;
 
-            // Submit the request and store the response
-            response = httpclient.execute(request);
+                case PUT:
+                    // Create the POST request
+                    HttpPut putRequest = new HttpPut(requestURL);
+                    if (requestHeaders != null) { requestHeaders.forEach(putRequest::addHeader); }
+                    if (requestBody != null) { putRequest.setEntity(new StringEntity(requestBody)); }
+                    response = httpclient.execute(putRequest);
+                    break;
+
+                case DELETE:
+                    HttpDelete deleterRequest = new HttpDelete(requestURL);
+                    if (requestHeaders != null) { requestHeaders.forEach(deleterRequest::addHeader); }
+                    response = httpclient.execute(deleterRequest);
+                    break;
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -139,4 +131,11 @@ public class RestAPIHelper {
     }
 
     // TODO need to get cookies from the response as well
+
+    private enum requestType {
+        GET(),
+        POST(),
+        PUT(),
+        DELETE();
+    }
 }

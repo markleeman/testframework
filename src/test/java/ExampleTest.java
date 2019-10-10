@@ -2,7 +2,6 @@ import customobjects.User;
 import framework.DriverWrapper;
 import framework.PropertyManager;
 import framework.RestAPIHelper;
-import org.apache.http.message.BasicHeader;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import pageobjects.EmailSent;
@@ -79,11 +78,10 @@ public class ExampleTest {
         PropertyManager props = new PropertyManager();
         String endpoint = props.getBaseURL() + "status_codes/404";
 
-        HashSet<BasicHeader> headers = new HashSet<BasicHeader>();
-        headers.add(new BasicHeader("Accept-Encoding", "gzip, deflate"));
-
         RestAPIHelper api = new RestAPIHelper();
-        api.submitGetRequest(endpoint, headers, null);
+        api.setRequestURL(endpoint);
+        api.addRequestHeader("Accept-Encoding", "gzip, deflate");
+        api.submitGetRequest();
         assertEquals(api.getResponseCode(), 404);
     }
 
@@ -93,13 +91,15 @@ public class ExampleTest {
         PropertyManager props = new PropertyManager();
         String endpoint = props.getBaseURL() + "authenticate";
 
-        HashSet<BasicHeader> headers = new HashSet<BasicHeader>();
-        headers.add(new BasicHeader("Accept-Encoding", "gzip, deflate"));
-        headers.add(new BasicHeader("Content-Type", "application/x-www-form-urlencoded"));
-
         RestAPIHelper api = new RestAPIHelper();
-        api.submitPostRequest(endpoint, headers, null, "username=tomsmith&password=SuperSecretPassword!");
+        api.setRequestURL(endpoint);
+        api.setRequestBody("username=tomsmith&password=SuperSecretPassword!");
+        api.addRequestHeader("Accept-Encoding", "gzip, deflate");
+        api.addRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        api.submitPostRequest();
         assertEquals(api.getResponseCode(), 200);
+        assertTrue(api.getResponseBody().contains("You logged into a secure area!"));
     }
 
     @AfterClass
