@@ -2,7 +2,9 @@ import customobjects.User;
 import framework.DriverWrapper;
 import framework.PropertyManager;
 import framework.RestAPIHelper;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import pageobjects.EmailSent;
 import pageobjects.ForgotPassword;
@@ -96,6 +98,13 @@ public class ExampleTest {
         api.submitPostRequest();
         assertEquals(api.getResponseCode(), 200);
         assertTrue(api.getResponseBody().contains("You logged into a secure area!"));
+    }
+
+    @AfterMethod
+    public void screenshotOnFail(ITestResult result) {
+        if (driver != null && !result.isSuccess()) {
+            driver.takeScreenShot(result.getMethod().getMethodName());
+        }
     }
 
     @AfterClass
