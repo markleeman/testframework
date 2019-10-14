@@ -9,8 +9,6 @@ import pageobjects.ForgotPassword;
 import pageobjects.LoginPage;
 import pageobjects.SecureArea;
 
-import java.util.HashSet;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -78,8 +76,7 @@ public class ExampleTest {
         PropertyManager props = new PropertyManager();
         String endpoint = props.getBaseURL() + "status_codes/404";
 
-        RestAPIHelper api = new RestAPIHelper();
-        api.setRequestURL(endpoint);
+        RestAPIHelper api = new RestAPIHelper(endpoint);
         api.addRequestHeader("Accept-Encoding", "gzip, deflate");
         api.submitGetRequest();
         assertEquals(api.getResponseCode(), 404);
@@ -91,8 +88,7 @@ public class ExampleTest {
         PropertyManager props = new PropertyManager();
         String endpoint = props.getBaseURL() + "authenticate";
 
-        RestAPIHelper api = new RestAPIHelper();
-        api.setRequestURL(endpoint);
+        RestAPIHelper api = new RestAPIHelper(endpoint);
         api.setRequestBody("username=tomsmith&password=SuperSecretPassword!");
         api.addRequestHeader("Accept-Encoding", "gzip, deflate");
         api.addRequestHeader("Content-Type", "application/x-www-form-urlencoded");

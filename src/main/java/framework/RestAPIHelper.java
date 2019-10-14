@@ -23,28 +23,59 @@ public class RestAPIHelper {
     private String requestURL;
     private String requestBody;
 
-    public RestAPIHelper() {
+    /**
+     * Create a new helper instance for the specified endpoint
+     * @param url URL of the endpoint we will submit the request to
+     */
+    public RestAPIHelper(String url) {
+        requestURL = url;
         requestCookies = new BasicCookieStore();
         requestHeaders = new HashSet<>();
     }
 
+    /**
+     * Adds a header to the request
+     * @param name Name of the header
+     * @param value Value of the header
+     */
     public void addRequestHeader(String name, String value) {
         requestHeaders.add(new BasicHeader(name, value));
     }
 
-    public void addRequestCookie(String name, String value, String domain, String path, boolean secure) {
+    /**
+     * Adds a cookie to the request
+     * @param name Name of the cookie
+     * @param value Value of the cookie
+     * @param domain Domain the cookie applies to
+     * @param path Path the cookie applies to
+     * @param secure True to set the secure flag (submit over https only) on the cookie
+     * @param httpOnly True to set the http only flag (prevents access to the cookie by JS)
+     */
+    public void addRequestCookie(String name, String value, String domain, String path, boolean secure, boolean httpOnly) {
         BasicClientCookie cookie = new BasicClientCookie(name, value);
         cookie.setDomain(domain);
         cookie.setPath(path);
         cookie.setSecure(secure);
+        cookie.setAttribute("httponly", String.valueOf(httpOnly));
 
         requestCookies.addCookie(cookie);
     }
 
-    public void setRequestURL(String url) {
-        requestURL = url;
+    /**
+     * Adds a cookie to the request with the secure and httpOnly flags set
+     * @param name Name of the cookie
+     * @param value Value of the cookie
+     * @param domain Domain the cookie applies to
+     * @param path Path the cookie applies to
+     */
+    public void addRequestCookie(String name, String value, String domain, String path) {
+        addRequestCookie(name, value, domain, path, true, true);
     }
 
+    /**
+     * Set the body value of the request
+     * @param body Request body as a string
+     */
     public void setRequestBody(String body) {
         requestBody = body;
     }
@@ -65,38 +96,46 @@ public class RestAPIHelper {
         submitRequest(requestType.PUT);
     }
 
+    /**
+     * Submit the request as the specified type
+     * @param type Request type
+     */
     private void submitRequest(requestType type) {
         response = null;
 
         try {
+
+            if (requestURL == null) {
+                throw new IllegalStateException("Request URL has not been specified");
+            }
+
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(requestCookies).build();
 
             switch(type){
 
                 case GET:
                     HttpGet getRequest = new HttpGet(requestURL);
-                    if (requestHeaders != null) { requestHeaders.forEach(getRequest::addHeader); }
+                    requestHeaders.forEach(getRequest::addHeader);
                     response = httpclient.execute(getRequest);
                     break;
 
                 case POST:
                     HttpPost postRequest = new HttpPost(requestURL);
-                    if (requestHeaders != null) { requestHeaders.forEach(postRequest::addHeader); }
+                    requestHeaders.forEach(postRequest::addHeader);
                     if (requestBody != null) { postRequest.setEntity(new StringEntity(requestBody)); }
                     response = httpclient.execute(postRequest);
                     break;
 
                 case PUT:
-                    // Create the POST request
                     HttpPut putRequest = new HttpPut(requestURL);
-                    if (requestHeaders != null) { requestHeaders.forEach(putRequest::addHeader); }
+                    requestHeaders.forEach(putRequest::addHeader);
                     if (requestBody != null) { putRequest.setEntity(new StringEntity(requestBody)); }
                     response = httpclient.execute(putRequest);
                     break;
 
                 case DELETE:
                     HttpDelete deleterRequest = new HttpDelete(requestURL);
-                    if (requestHeaders != null) { requestHeaders.forEach(deleterRequest::addHeader); }
+                    requestHeaders.forEach(deleterRequest::addHeader);
                     response = httpclient.execute(deleterRequest);
                     break;
             }
@@ -106,6 +145,10 @@ public class RestAPIHelper {
         }
     }
 
+    /**
+     * Returns the http response code we received in response to our request
+     * @return HTTP response code as a integer
+     */
     public int getResponseCode() {
 
         int code = 0;
@@ -117,6 +160,10 @@ public class RestAPIHelper {
         return code;
     }
 
+    /**
+     * Returns the message body we received in response to our request
+     * @return Message body as a string
+     */
     public String getResponseBody() {
         String body = null;
 
