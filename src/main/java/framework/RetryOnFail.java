@@ -5,6 +5,8 @@ import org.testng.ITestResult;
 
 /**
  * Retry analyzer for TestNG tests which will re-run a failing test before reporting a failure
+ * This can be useful for dealing with flakey tests, but we should do as much as possible to make
+ * the tests themselves reliable rather than hoping they will pass on the next attempt.
   */
 
 public class RetryOnFail implements IRetryAnalyzer  {
@@ -12,7 +14,7 @@ public class RetryOnFail implements IRetryAnalyzer  {
     private int count = 0;
     private int maxCount = 2; // Number of re-try attempts
 
-    public boolean isRetryAvailable() {
+    private boolean isRetryAvailable() {
         return count <= ((Boolean.parseBoolean((System.getProperty("framework.debugMode")))) ? 0 : maxCount);
     }
 

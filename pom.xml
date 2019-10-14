@@ -30,6 +30,7 @@
                         <framework.browser>${framework.browser}</framework.browser>
                         <framework.useSeleniumGrid>${framework.useSeleniumGrid}</framework.useSeleniumGrid>
                         <framework.config>${framework.config}</framework.config>
+                        <framework.debugMode>${framework.debugMode}</framework.debugMode>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -43,6 +44,13 @@
                 <framework.browser>chrome_headless</framework.browser>
                 <framework.useSeleniumGrid>false</framework.useSeleniumGrid>
                 <framework.config>test</framework.config>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>Debugging</id>
+            <properties>
+                <framework.debugMode>true</framework.debugMode>
             </properties>
         </profile>
     </profiles>

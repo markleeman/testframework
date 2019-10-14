@@ -2,6 +2,7 @@ import customobjects.User;
 import framework.DriverWrapper;
 import framework.PropertyManager;
 import framework.RestAPIHelper;
+import framework.RetryOnFail;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -19,7 +20,7 @@ public class ExampleTest {
     private DriverWrapper driver;
 
     // Example test using an explicitly defined browser and Selenium Grid option
-    @Test
+    @Test(retryAnalyzer = RetryOnFail.class)
     public void passwordReset() {
 
         driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS, false);
@@ -36,7 +37,7 @@ public class ExampleTest {
     }
 
     // Example test using an explicitly defined browser and default Selenium Grid option
-    @Test
+    @Test(retryAnalyzer = RetryOnFail.class)
     public void invalidUsername() {
 
         driver = new DriverWrapper(DriverWrapper.browsers.CHROME_HEADLESS);
@@ -53,7 +54,7 @@ public class ExampleTest {
     }
 
     // Example test using system properties to specify the browser and os
-    @Test
+    @Test(retryAnalyzer = RetryOnFail.class)
     public void validLogin() {
 
         driver = DriverWrapper.createFromSystemProperties();
@@ -72,7 +73,7 @@ public class ExampleTest {
     }
 
     // Example tests using the Rest API helper instead of a browser
-    @Test
+    @Test(retryAnalyzer = RetryOnFail.class)
     public void getRequest() {
 
         PropertyManager props = new PropertyManager();
@@ -84,7 +85,7 @@ public class ExampleTest {
         assertEquals(api.getResponseCode(), 404);
     }
 
-    @Test
+    @Test(retryAnalyzer = RetryOnFail.class)
     public void postRequest() {
 
         PropertyManager props = new PropertyManager();
