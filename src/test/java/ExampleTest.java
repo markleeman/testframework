@@ -107,6 +107,7 @@ public class ExampleTest {
             }
 
             driver.shutDown();
+            driver = null;
         }
     }
 
@@ -114,6 +115,7 @@ public class ExampleTest {
     public void teardown() {
         if (driver != null) {
             driver.shutDown();
+            driver = null;
         }
     }
 }
