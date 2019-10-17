@@ -102,11 +102,11 @@ public class ExampleTest {
     public void screenshotOnFail(ITestResult result) {
         if (driver != null) {
 
-            driver.shutDown();
-
             if (!result.isSuccess()) {
                 driver.takeScreenShot(result.getMethod().getMethodName());
             }
+
+            driver.shutDown();
         }
     }
 
