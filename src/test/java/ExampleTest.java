@@ -1,8 +1,5 @@
 import customobjects.User;
-import framework.DriverWrapper;
-import framework.PropertyManager;
-import framework.RestAPIHelper;
-import framework.RetryOnFail;
+import framework.*;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -103,8 +100,13 @@ public class ExampleTest {
 
     @AfterMethod
     public void screenshotOnFail(ITestResult result) {
-        if (driver != null && !result.isSuccess()) {
-            driver.takeScreenShot(result.getMethod().getMethodName());
+        if (driver != null) {
+
+            driver.shutDown();
+
+            if (!result.isSuccess()) {
+                driver.takeScreenShot(result.getMethod().getMethodName());
+            }
         }
     }
 
