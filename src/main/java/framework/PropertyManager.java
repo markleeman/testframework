@@ -41,6 +41,14 @@ public class PropertyManager {
 
     public String getScreenshotPath() { return props.getProperty("screenshot_path"); }
 
+    public String getImapHost() { return props.getProperty("imap_host"); }
+
+    public int getImapPort() { return Integer.parseInt(props.getProperty("imap_port")); }
+
+    public String getImapUsername() { return props.getProperty("imap_username"); }
+
+    public String getImapPassword() { return props.getProperty("imap_password"); }
+
     public enum environment {
         TEST ("config.properties", "test"),
         STAGING ("config.properties", "staging"),

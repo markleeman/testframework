@@ -92,6 +92,13 @@
             <version>20160810</version>
         </dependency>
 
+        <!-- Mail client for imap helper -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
         <!-- OTP library needed for the TOTPHelper -->
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
