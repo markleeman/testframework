@@ -7,8 +7,9 @@ public class Util {
     private static final int DEFAULT_LENGTH = 10;
 
     public static String getValidEmail(){
+        PropertyManager props = new PropertyManager();
 
-        return getRandomString() + new PropertyManager().getEmailDomain();
+        return props.getEmailPrefix() + getRandomString() + props.getEmailDomain();
     }
 
     public static String getRandomString(){

@@ -98,6 +98,20 @@ public class ExampleTest {
         assertTrue(api.getResponseBody().contains("You logged into a secure area!"));
     }
 
+    @Test
+    public void emailTest() {
+        User user = User.createNewRandomUser();
+
+        EmailHelper gmail = new EmailHelper();
+        String email = gmail.waitForPasswordResetEmail(user);
+
+        // At this point we'd probably want to extract a URL, token, or some other information from the email, and then
+        // use this to continue our test.  However, for the purpose of this example we'll just confirm it contains
+        // a piece of text
+
+        assertTrue(email.contains("username: tomsmith"));
+    }
+
     @AfterMethod
     public void screenshotOnFail(ITestResult result) {
         if (driver != null) {

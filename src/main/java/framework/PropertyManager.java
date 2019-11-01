@@ -35,6 +35,10 @@ public class PropertyManager {
         return props.getProperty("base_url");
     }
 
+    public String getEmailPrefix() {
+        return props.getProperty("email_prefix");
+    }
+
     public String getEmailDomain() {
         return props.getProperty("email_domain");
     }
