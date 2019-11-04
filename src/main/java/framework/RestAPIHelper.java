@@ -183,6 +183,6 @@ public class RestAPIHelper {
         GET(),
         POST(),
         PUT(),
-        DELETE();
+        DELETE()
     }
 }

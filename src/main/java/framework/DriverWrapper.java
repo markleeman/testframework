@@ -24,7 +24,7 @@ import java.net.URL;
 import java.util.Set;
 
 /**
- * Creates a new RemoteWebDriver using the supplied browser and OS and provides a number of helper methods
+ * Creates a new RemoteWebDriver using the specified browser and provides a number of helper methods
  * for interacting with it
  */
 public class DriverWrapper {
@@ -276,7 +276,7 @@ public class DriverWrapper {
     }
 
     /**
-     * Saves a screenshot of the browser window with the provided filename.  The path to the screeshots folder
+     * Saves a screenshot of the browser window as a png with the provided filename.  The path to the screeshots folder
      * should be specified in the config file
      * @param imageName Filename for the screenshot without file extension
      */

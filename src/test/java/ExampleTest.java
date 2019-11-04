@@ -58,9 +58,7 @@ public class ExampleTest {
 
         String loggedInMessage = "You logged into a secure area!";
 
-        User testUser = User.createNewRandomUser();
-        testUser.setUsername("tomsmith");
-        testUser.setPassword("SuperSecretPassword!");
+        User testUser = UserManager.CUSTOMER.getUser();
 
         SecureArea secure = new LoginPage(driver)
                 .enterUserDetails(testUser)
@@ -98,12 +96,19 @@ public class ExampleTest {
         assertTrue(api.getResponseBody().contains("You logged into a secure area!"));
     }
 
-    @Test
+    @Test(retryAnalyzer = RetryOnFail.class)
     public void emailTest() {
-        User user = User.createNewRandomUser();
+
+        User testUser = User.createNewRandomUser();
+
+        driver = DriverWrapper.createFromSystemProperties();
+
+        EmailSent reset = new ForgotPassword(driver)
+                .enterEmail(testUser.getEmailAddress())
+                .submitFormWithButton();
 
         EmailHelper gmail = new EmailHelper();
-        String email = gmail.waitForPasswordResetEmail(user);
+        String email = gmail.waitForPasswordResetEmail(testUser);
 
         // At this point we'd probably want to extract a URL, token, or some other information from the email, and then
         // use this to continue our test.  However, for the purpose of this example we'll just confirm it contains
