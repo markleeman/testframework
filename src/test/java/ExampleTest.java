@@ -1,4 +1,4 @@
-import customobjects.User;
+import models.User;
 import framework.*;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;

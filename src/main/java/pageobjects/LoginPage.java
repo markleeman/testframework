@@ -1,6 +1,6 @@
 package pageobjects;
 
-import customobjects.User;
+import models.User;
 import framework.DriverWrapper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;

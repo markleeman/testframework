@@ -1,9 +1,12 @@
-package customobjects;
+package models;
 
 import framework.Util;
 
 /**
- *
+ * This class models a user and should contain all of the information needed to create one in the application under test
+ * Generally, we should be creating our page objects so that when they need any information about a user we can simply
+ * pass them an instance of this class.  The page object can then retrieve the information it needs to perform whatever
+ * action we are trying to perform, such as filling in a sign-up form or logging-in to the application.
  */
 public class User {
 

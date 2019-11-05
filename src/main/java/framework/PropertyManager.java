@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Class is responsible for providing config values to the rest of the framework.  If we have multiple test environments
+ * each one should have it's own config file, and we use the framework.config system property to define which one we're
+ * using at runtime.
+ */
 public class PropertyManager {
 
     private Properties props;
@@ -12,7 +17,11 @@ public class PropertyManager {
         props = new Properties();
 
         environment env = environment.fromString(System.getProperty("framework.config"));
-        assert env != null;
+
+        if (env == null) {
+            env = environment.TEST;
+            System.out.println("framework.config property not specified, defaulting to '" + env.envName + "'");
+        }
 
         try {
             InputStream input = getClass().getClassLoader().getResourceAsStream(env.configFile);
@@ -23,6 +32,7 @@ public class PropertyManager {
         }
     }
 
+    // TODO verify property values have been set
     public String getHubURL() {
         return props.getProperty("hub_url");
     }

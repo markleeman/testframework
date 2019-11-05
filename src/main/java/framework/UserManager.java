@@ -1,7 +1,13 @@
 package framework;
 
-import customobjects.User;
+import models.User;
 
+/**
+ * This enum should contain the details of any pre-defined test accounts which we want to use.  If you have multiple
+ * test environments it's helpful to make sure the accounts exist in all of them with the same information, otherwise
+ * tests may not run reliably between environments.  Consider creating a script which will created the accounts in each
+ * environment using the information here.
+ */
 public enum UserManager {
 
     CUSTOMER ("Tom", "Smith", "tom.smith@example.com", "SuperSecretPassword!", "07700 900000", "tomsmith"),

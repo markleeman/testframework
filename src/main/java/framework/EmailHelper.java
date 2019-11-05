@@ -1,6 +1,6 @@
 package framework;
 
-import customobjects.User;
+import models.User;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;

@@ -2,6 +2,9 @@ package framework;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+/**
+ * Class contains any useful utility methods which we want to make use of throughout our framework
+ */
 public class Util {
 
     private static final int DEFAULT_LENGTH = 10;
