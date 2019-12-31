@@ -12,7 +12,7 @@ public class Util {
     public static String getValidEmail(){
         PropertyManager props = new PropertyManager();
 
-        return props.getEmailPrefix() + getRandomString() + props.getEmailDomain();
+        return props.getEmailUsername() + "+" + getRandomString() + props.getEmailDomain();
     }
 
     public static String getRandomString(){

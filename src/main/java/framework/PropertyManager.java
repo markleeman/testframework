@@ -32,36 +32,43 @@ public class PropertyManager {
         }
     }
 
-    // TODO verify property values have been set
     public String getHubURL() {
-        return props.getProperty("hub_url");
+        return getPropValue("hub_url");
     }
 
     public String getDriverFolder() {
-        return props.getProperty("driver_folder");
+        return getPropValue("driver_folder");
     }
 
     public String getBaseURL() {
-        return props.getProperty("base_url");
+        return getPropValue("base_url");
     }
 
-    public String getEmailPrefix() {
-        return props.getProperty("email_prefix");
+    public String getEmailUsername() {
+        return getPropValue("email_username");
     }
 
-    public String getEmailDomain() {
-        return props.getProperty("email_domain");
+    public String getEmailDomain() { return getPropValue("email_domain"); }
+
+    public String getScreenshotPath() { return getPropValue("screenshot_path"); }
+
+    public String getImapHost() { return getPropValue("imap_host"); }
+
+    public int getImapPort() { return Integer.parseInt(getPropValue("imap_port")); }
+
+    public String getImapUsername() { return getPropValue("imap_username"); }
+
+    public String getImapPassword() { return getPropValue("imap_password"); }
+
+    private String getPropValue(String key) {
+        String val = props.getProperty(key);
+
+        if (val == null || val.equals("")) {
+            throw new IllegalStateException("No value set for property: " + key);
+        }
+
+        return val;
     }
-
-    public String getScreenshotPath() { return props.getProperty("screenshot_path"); }
-
-    public String getImapHost() { return props.getProperty("imap_host"); }
-
-    public int getImapPort() { return Integer.parseInt(props.getProperty("imap_port")); }
-
-    public String getImapUsername() { return props.getProperty("imap_username"); }
-
-    public String getImapPassword() { return props.getProperty("imap_password"); }
 
     public enum environment {
         TEST ("config.properties", "test"),
