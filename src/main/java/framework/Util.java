@@ -28,12 +28,13 @@ public class Util {
     }
 
     /**
-     * Generate a random string with just numeric characters
+     * Generate a random string of the specified length with just numeric characters and no leading zeros
+     * We're returning a string to make comparisons simpler in our tests as the values we get back from the driver
+     * will also be strings.
      * @param numDigits Number of digits our random number should contain
      * @return String containing random numeric characters
      */
     public static String getRandomNumber(int numDigits) {
-        // TODO strip leading zeros
-        return  RandomStringUtils.random(5);
+        return  RandomStringUtils.randomNumeric(1, 9) + RandomStringUtils.randomNumeric(numDigits - 1);
     }
 }

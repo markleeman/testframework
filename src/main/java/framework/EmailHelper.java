@@ -2,13 +2,13 @@ package framework;
 
 import models.User;
 
+import javax.mail.*;
+import javax.mail.search.FlagTerm;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import javax.mail.*;
-import javax.mail.search.FlagTerm;
-import java.util.Properties;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -84,7 +84,12 @@ public class EmailHelper {
                 messageBody = email.getContent().toString();
             }
             else {
-                // TODO Handle multipart messages
+                Multipart multipart = (Multipart) email.getContent();
+
+                for (int x = 0; x < multipart.getCount(); x++) {
+                    BodyPart part = multipart.getBodyPart(x);
+                    messageBody += part.getContent();
+                }
             }
 
         }
