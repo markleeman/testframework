@@ -1,9 +1,7 @@
 package pageobjects;
 
+import framework.DriverWrapper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SecureArea extends BasePageObject {
 
@@ -15,14 +13,11 @@ public class SecureArea extends BasePageObject {
 
     /**
      * Constructor used by other page objects as we navigate around a site
-     * @param driver WebDriver instance which should already be on this page
+     * @param wrapper WebDriver instance which should already be on this page
      */
-    protected SecureArea(RemoteWebDriver driver) {
-        this.driver = driver;
-
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.presenceOfElementLocated(logoutbutton));
-
+    protected SecureArea(DriverWrapper wrapper) {
+        this.driver = wrapper;
+        driver.waitFor.elementToBePresent(logoutbutton);
         selfCheckPageTitleContains(PAGE_TITLE);
     }
 
