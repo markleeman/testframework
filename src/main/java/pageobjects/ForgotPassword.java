@@ -2,7 +2,6 @@ package pageobjects;
 
 import framework.DriverWrapper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class ForgotPassword extends BasePageObject {
 
@@ -17,17 +16,24 @@ public class ForgotPassword extends BasePageObject {
      * @param wrapper DriverWrapper instance we should get the WebDriver instance from and use to load this page
      */
     public ForgotPassword(DriverWrapper wrapper) {
-        this.driver = wrapper.getDriver();
-        driver.get(PAGE_URL);
-        selfCheckPageTitleContains(PAGE_TITLE);
+        setup(wrapper, true);
     }
 
     /**
      * Constructor used by other page objects as we navigate around a site
-     * @param driver WebDriver instance which should already be on this page
+     * @param wrapper DriverWrapper instance which should already be on this page
      */
-    protected ForgotPassword(RemoteWebDriver driver) {
-        this.driver = driver;
+    protected ForgotPassword(DriverWrapper wrapper, boolean loadPage) {
+        setup(wrapper, loadPage);
+    }
+
+    private void setup(DriverWrapper wrapper, boolean loadPage) {
+        this.driver = wrapper;
+
+        if (loadPage) {
+            driver.get(PAGE_URL);
+        }
+
         selfCheckPageTitleContains(PAGE_TITLE);
     }
 
@@ -37,7 +43,7 @@ public class ForgotPassword extends BasePageObject {
     }
 
     public EmailSent submitFormWithButton() {
-        clickElement(submitButton);
+        driver.clickOn(submitButton);
         return new EmailSent(driver);
     }
 

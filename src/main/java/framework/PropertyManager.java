@@ -70,6 +70,14 @@ public class PropertyManager {
         return val;
     }
 
+    public String getDriverBrowser() {
+        return props.getProperty("driver_browser");
+    }
+
+    public String getUseSeleniumGrid() {
+        return props.getProperty("use_selenium_grid");
+    }
+
     public enum environment {
         TEST ("config.properties", "test"),
         STAGING ("config.properties", "staging"),

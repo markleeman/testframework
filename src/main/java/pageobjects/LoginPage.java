@@ -1,9 +1,8 @@
 package pageobjects;
 
-import models.User;
 import framework.DriverWrapper;
+import models.User;
 import org.openqa.selenium.By;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class LoginPage extends BasePageObject {
 
@@ -20,17 +19,24 @@ public class LoginPage extends BasePageObject {
      * @param wrapper DriverWrapper instance we should get the WebDriver instance from and use to load this page
      */
     public LoginPage(DriverWrapper wrapper) {
-        this.driver = wrapper.getDriver();
-        driver.get(PAGE_URL);
-        selfCheckPageTitleContains(PAGE_TITLE);
+        setup(wrapper, true);
     }
 
     /**
      * Constructor used by other page objects as we navigate around a site
-     * @param driver WebDriver instance which should already be on this page
+     * @param wrapper WebDriver instance which should already be on this page
      */
-    protected LoginPage(RemoteWebDriver driver) {
-        this.driver = driver;
+    protected LoginPage(DriverWrapper wrapper, boolean loadPage) {
+        setup(wrapper, loadPage);
+    }
+
+    private void setup(DriverWrapper wrapper, boolean loadPage) {
+        this.driver = wrapper;
+
+        if (loadPage) {
+            driver.get(PAGE_URL);
+        }
+
         selfCheckPageTitleContains(PAGE_TITLE);
     }
 
@@ -51,12 +57,12 @@ public class LoginPage extends BasePageObject {
     }
 
     public SecureArea loginExpectingSuccess() {
-        clickElement(loginbutton);
+        driver.clickOn(loginbutton);
         return new SecureArea(driver);
     }
 
     public LoginPage loginExpectingError() {
-        clickElementAndWaitForElementToBePresent(loginbutton, messageBox);
+        driver.clickOnAndWaitFor(loginbutton, messageBox);
         return this;
     }
 

@@ -1,19 +1,16 @@
 package pageobjects;
 
+import framework.DriverWrapper;
 import framework.PropertyManager;
+import framework.enums.SupportedBrowsers;
 import org.openqa.selenium.*;
-import org.openqa.selenium.remote.BrowserType;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Basic page object class containing methods which are applicable to any web page
  */
 public class BasePageObject {
 
-    protected RemoteWebDriver driver;
+    protected DriverWrapper driver;
     protected String BASE_URL;
     protected PropertyManager props;
 
@@ -34,7 +31,7 @@ public class BasePageObject {
     protected void selfCheckPageTitleContains(String[] pageTitles) {
 
         try {
-            waitForPageTitle(pageTitles, 5);
+            driver.waitFor.pageTitleToContain(pageTitles, 5);
         }
         catch (TimeoutException e) {
             StringBuilder expectedTitles = new StringBuilder();
@@ -53,7 +50,7 @@ public class BasePageObject {
      * @param url Full or partial URL to check against the current URL
      */
     protected void selfCheckPageURLContains(String url) {
-        if (! driver.getCurrentUrl().contains(url)) {
+        if (! driver.urlContains(url)) {
             throw new IllegalStateException("Page url does not match");
         }
     }
@@ -75,40 +72,6 @@ public class BasePageObject {
     }
 
     /**
-     * Clicks on the element located by the provided By locator
-     * @param locator Locator for the element to click on
-     */
-    protected void clickElement(By locator){
-        driver.findElement(locator).click();
-    }
-
-    /**
-     * Clicks on the element located by the provided By locator, and then waits for a second element to be in a clickable state
-     * @param clickOnElement Locator for the element to click on
-     * @param waitForElement Locator for the element to wait for
-     */
-    protected void clickElementAndWaitForElementToBeClickable(By clickOnElement, By waitForElement){
-
-        clickElement(clickOnElement);
-
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.elementToBeClickable(waitForElement));
-    }
-
-    /**
-     * Clicks on the element located by the provided By locator, and then waits for a second element to be present in the DOM
-     * @param clickOnElement Locator for the element to click on
-     * @param waitForElement Locator for the element to wait for
-     */
-    protected void clickElementAndWaitForElementToBePresent(By clickOnElement, By waitForElement){
-
-        clickElement(clickOnElement);
-
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.presenceOfElementLocated(waitForElement));
-    }
-
-    /**
      * Sends the supplied keystrokes to the supplied element
      * @param element Element to send keystrokes to
      * @param text Keystrokes to send to the element
@@ -127,34 +90,32 @@ public class BasePageObject {
      */
     protected void loadPageAndDealWithCertWarnings(String pageURL){
 
-        WebDriverWait fiveSecWait = new WebDriverWait(driver, 5);
-
         try {
             driver.get(pageURL);
         }
         catch(UnhandledAlertException e){
-            driver.switchTo().alert().accept();
+            driver.okAlert();
         }
 
         // Handling for security alerts in IE11
-        if (driver.getCapabilities().getBrowserName().equals(BrowserType.IEXPLORE)) {
+        if (driver.browserIs(SupportedBrowsers.IE11)) {
 
             // IE will occasionally throw up a security alert because of self signed certs
             try {
-                fiveSecWait.until(ExpectedConditions.or(ExpectedConditions.alertIsPresent(), ExpectedConditions.titleContains("Certificate Error:")));
+                driver.waitFor.pageTitleToContain(new String[] {"Certificate Error:"}, 5);
 
                 try {
-                    driver.switchTo().alert().accept();
-                    fiveSecWait.until(ExpectedConditions.not(ExpectedConditions.titleContains("This page can’t be displayed")));
+                    driver.okAlert();
+                    driver.waitFor.pageTitleToContain(new String[] {"This page can’t be displayed"}, 5);
                 }
                 catch(NoAlertPresentException e) { /* No alert present */ }
 
-                if (driver.getTitle().contains("Certificate Error:")){
+                if (driver.pageTitleContains("Certificate Error:")){
                     try {
                         driver.findElement(By.id("overridelink")).click();
 
                         // And then it might occasionally throw up a security alert
-                        Alert securityAlert = fiveSecWait.until(ExpectedConditions.alertIsPresent());
+                        Alert securityAlert = driver.waitFor.alertToBePresent();
                         securityAlert.accept();
                     }
                     catch (NoSuchElementException | TimeoutException | NoAlertPresentException e){ /* No alert present */ }
@@ -165,39 +126,15 @@ public class BasePageObject {
         }
 
         // Handling for security alerts in Edge
-        else if (driver.getCapabilities().getBrowserName().equals(BrowserType.EDGE)) {
+        else if (driver.browserIs(SupportedBrowsers.EDGE)) {
 
-            if (driver.getTitle().contains("Certificate Error:")){
+            if (driver.pageTitleContains("Certificate Error:")){
                 try {
-                    driver.findElement(By.id("moreInformationDropdownSpan")).click();
-
-                    fiveSecWait.until(ExpectedConditions.presenceOfElementLocated(By.id("invalidcert_continue")));
-
-                    driver.findElement(By.id("invalidcert_continue")).click();
+                    driver.clickOnAndWaitFor(By.id("moreInformationDropdownSpan"), By.id("invalidcert_continue"));
+                    driver.clickOn(By.id("invalidcert_continue"));
                 }
                 catch (NoSuchElementException e){ /* No alert present */ }
             }
         }
-    }
-
-    /**
-     * Keep check the page title for the supplied number of seconds until it matches one of the supplied strings
-     * @param expectedTitles Array of possible page titles
-     * @param timeOutSeconds Length of time in seconds we should wait for
-     */
-    protected void waitForPageTitle(String[] expectedTitles, int timeOutSeconds) {
-        WebDriverWait wait = new WebDriverWait(driver, timeOutSeconds);
-        wait.until((ExpectedCondition<Boolean>) driver -> {
-
-            boolean titleMatches = false;
-
-            for(String expectedTitle : expectedTitles){
-                if (this.driver.getTitle().contains(expectedTitle)){
-                    titleMatches = true;
-                }
-            }
-
-            return titleMatches;
-        });
     }
 }
