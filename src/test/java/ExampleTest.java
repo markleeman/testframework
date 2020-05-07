@@ -1,5 +1,6 @@
 import framework.*;
 import framework.enums.SupportedBrowsers;
+import framework.enums.TestAccounts;
 import models.User;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
@@ -58,7 +59,7 @@ public class ExampleTest {
 
         String loggedInMessage = "You logged into a secure area!";
 
-        User testUser = UserManager.CUSTOMER.getUser();
+        User testUser = TestAccounts.CUSTOMER.getUser();
 
         SecureArea secure = new LoginPage(driver)
                 .enterUserDetails(testUser)
@@ -86,7 +87,7 @@ public class ExampleTest {
         PropertyManager props = new PropertyManager();
         String endpoint = props.getBaseURL() + "authenticate";
 
-        User testUser = UserManager.CUSTOMER.getUser();
+        User testUser = TestAccounts.CUSTOMER.getUser();
 
         RestAPIHelper api = new RestAPIHelper(endpoint);
         api.setRequestBody("username=" + testUser.getUsername() + "&password=" + testUser.getPassword());
