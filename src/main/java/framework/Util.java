@@ -1,6 +1,9 @@
 package framework;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
+
+import java.util.Random;
 
 /**
  * Class contains any useful utility methods which we want to make use of throughout our framework
@@ -12,29 +15,42 @@ public class Util {
     public static String getValidEmail(){
         PropertyManager props = new PropertyManager();
 
-        return props.getEmailUsername() + "+" + getRandomString() + props.getEmailDomain();
+        return props.getEmailUsername() + "+" + getRandomStringOfLength() + props.getEmailDomain();
     }
 
-    public static String getRandomString(){
-        return getRandomString(DEFAULT_LENGTH);
+    public static String getRandomStringOfLength(){
+        return getRandomStringOfLength(DEFAULT_LENGTH);
     }
 
-    public static String getRandomString(int length){
+    public static String getRandomStringOfLength(int length){
         return RandomStringUtils.randomAlphanumeric(length);
     }
 
-    public static String getRandomNumber(){
-        return getRandomNumber(DEFAULT_LENGTH);
+    public static long getRandomNumberOfLength(){
+        return getRandomNumberOfLength(DEFAULT_LENGTH);
     }
 
     /**
-     * Generate a random string of the specified length with just numeric characters and no leading zeros
-     * We're returning a string to make comparisons simpler in our tests as the values we get back from the driver
-     * will also be strings.
-     * @param numDigits Number of digits our random number should contain
-     * @return String containing random numeric characters
+     * Generate a random number of the specified length with no leading zeros
+     * @param length Number of digits our random number should contain
+     * @return Random number with specified number of digits
      */
-    public static String getRandomNumber(int numDigits) {
-        return  RandomStringUtils.randomNumeric(1, 9) + RandomStringUtils.randomNumeric(numDigits - 1);
+    public static long getRandomNumberOfLength(int length) {
+
+        // We'll limit the length to 18 digits to avoid hitting Long.MAX_VALUE
+        if (length > 18) {
+            throw new IllegalStateException("Max random number length exceeded");
+        }
+
+        Random rng = new Random();
+
+        // If this is the first digit then don't allow a zero value
+        int firstDigit = rng.nextInt(9) + 1;;
+
+        // We can then generate any random number for the remaining digits
+        long remainingNDigits = RandomUtils.nextLong(0, (long)(Math.pow(10, (length - 1))));
+
+        // And concatenate them to make a random number with no leading zeros
+        return (firstDigit * (long)(Math.pow(10, length - 1))) + remainingNDigits;
     }
 }
