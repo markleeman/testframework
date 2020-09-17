@@ -2,14 +2,16 @@ import framework.*;
 import framework.enums.SupportedBrowsers;
 import framework.enums.TestAccounts;
 import models.User;
+import org.openqa.selenium.logging.LogEntry;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-import pageobjects.EmailSent;
-import pageobjects.ForgotPassword;
-import pageobjects.LoginPage;
-import pageobjects.SecureArea;
+import pageobjects.*;
+
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -118,6 +120,23 @@ public class ExampleTest {
         // a piece of text
 
         assertTrue(email.contains("username: tomsmith"));
+    }
+
+    @Test
+    public void getBrowserLogs() {
+
+        driver = DriverFactory.createLocalDriver(SupportedBrowsers.CHROME_HEADLESS);
+
+        JSError err = new JSError(driver);
+
+        List<LogEntry> logs = driver.getBrowserConsoleErrors();
+
+        assertEquals(logs.size(), 1);
+        assertEquals(logs.get(0).getLevel(), Level.SEVERE);
+
+        for (LogEntry entry : logs) {
+            System.out.println(new Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage() + " " + entry.toString());
+        }
     }
 
     @AfterMethod

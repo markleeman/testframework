@@ -3,6 +3,8 @@ package framework;
 import framework.enums.SupportedBrowsers;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;
@@ -160,6 +162,10 @@ public class DriverWrapper {
         clickOn(driver.findElement(locator));
     }
 
+    /**
+     * Clicks on the element supplied
+     * @param element The element to click on
+     */
     public void clickOn(WebElement element){
         element.click();
     }
@@ -188,5 +194,19 @@ public class DriverWrapper {
 
     public String getTitle() {
         return driver.getTitle();
+    }
+
+    /**
+     * Get any errors which are present in the browser console
+     * @return List of errors collected from the browser console
+     */
+    public List<LogEntry> getBrowserConsoleErrors() {
+
+        if (browserIs(SupportedBrowsers.CHROME) || browserIs(SupportedBrowsers.CHROME_HEADLESS)) {
+            return driver.manage().logs().get(LogType.BROWSER).getAll();
+        }
+        else {
+            throw new IllegalStateException("Method only supported by Chrome at this time");
+        }
     }
 }
