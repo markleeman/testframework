@@ -27,7 +27,7 @@ public class User {
     }
 
     public static User createNewRandomUser() {
-        return new User(Util.getRandomString(8), Util.getRandomString(8), Util.getValidEmail(), Util.getRandomString(8), Util.getRandomNumber(11), Util.getRandomString(8));
+        return new User(Util.getRandomStringOfLength(8), Util.getRandomStringOfLength(8), Util.getValidEmail(), Util.getRandomStringOfLength(8), String.valueOf(Util.getRandomNumberOfLength(11)), Util.getRandomStringOfLength(8));
     }
 
     public String getFirstName() {
