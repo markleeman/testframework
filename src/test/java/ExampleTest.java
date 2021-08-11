@@ -101,7 +101,7 @@ public class ExampleTest {
         assertTrue(api.getResponseBody().contains("You logged into a secure area!"));
     }
 
-    @Test(retryAnalyzer = RetryOnFail.class)
+    @Test(retryAnalyzer = RetryOnFail.class, groups="excludeOnGithub")
     public void emailTest() {
 
         User testUser = User.createNewRandomUser();
