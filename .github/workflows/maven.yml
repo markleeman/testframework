@@ -15,4 +15,3 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn clean test -PExample
-      # TODO change stage to test once you figure out how to set them up with actions
