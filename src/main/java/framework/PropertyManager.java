@@ -61,7 +61,12 @@ public class PropertyManager {
     public String getImapPassword() { return getPropValue("imap_password"); }
 
     private String getPropValue(String key) {
-        String val = props.getProperty(key);
+
+        String val = System.getProperty(key);
+
+        if (val == null || val.equals("")) {
+            val = props.getProperty(key);
+        }
 
         if (val == null || val.equals("")) {
             throw new IllegalStateException("No value set for property: " + key);
