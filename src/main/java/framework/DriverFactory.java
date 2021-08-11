@@ -123,9 +123,9 @@ public class DriverFactory {
 
         else {
 
-            final String geckoDriver = "geckodriver";
-            final String chromeDriver = "chromedriver";
-            final String ieDriver = "IEDriverServer";
+            final String geckoDriver = "/geckodriver";
+            final String chromeDriver = "/chromedriver";
+            final String ieDriver = "/IEDriverServer";
 
             String fileExtension = "";
 

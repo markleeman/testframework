@@ -21,7 +21,7 @@ public class ExampleTest {
     private DriverWrapper driver;
 
     // Example tests using an explicitly defined, local browser
-    @Test(retryAnalyzer = RetryOnFail.class)
+    @Test(retryAnalyzer = RetryOnFail.class, groups = "github")
     public void passwordReset() {
 
         driver = DriverFactory.createLocalDriver(SupportedBrowsers.CHROME_HEADLESS);
@@ -37,7 +37,7 @@ public class ExampleTest {
         assertTrue(reset.getMessageText().contains(confirmMessage));
     }
 
-    @Test(retryAnalyzer = RetryOnFail.class)
+    @Test(retryAnalyzer = RetryOnFail.class, groups = "github")
     public void invalidUsername() {
 
         driver = DriverFactory.createLocalDriver(SupportedBrowsers.CHROME_HEADLESS);
@@ -54,7 +54,7 @@ public class ExampleTest {
     }
 
     // Example test using system properties to specify the browser and os
-    @Test(retryAnalyzer = RetryOnFail.class)
+    @Test(retryAnalyzer = RetryOnFail.class, groups = "github")
     public void validLogin() {
 
         driver = DriverFactory.createDriverFromSystemProperties();
@@ -71,7 +71,7 @@ public class ExampleTest {
     }
 
     // Example tests using the Rest API helper instead of a browser
-    @Test(retryAnalyzer = RetryOnFail.class)
+    @Test(retryAnalyzer = RetryOnFail.class, groups = "github")
     public void getRequest() {
 
         PropertyManager props = new PropertyManager();
@@ -83,7 +83,7 @@ public class ExampleTest {
         assertEquals(api.getResponseCode(), 404);
     }
 
-    @Test(retryAnalyzer = RetryOnFail.class)
+    @Test(retryAnalyzer = RetryOnFail.class, groups = "github")
     public void postRequest() {
 
         PropertyManager props = new PropertyManager();
