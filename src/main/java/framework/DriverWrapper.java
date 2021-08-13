@@ -121,7 +121,7 @@ public class DriverWrapper {
 
         File scrFile = driver.getScreenshotAs(OutputType.FILE);
 
-        String folderPath = new PropertyManager().getScreenshotPath();
+        String folderPath = new ConfigManager().getScreenshotPath();
 
         int fileNum = 0;
         File screenshot;

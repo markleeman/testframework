@@ -58,7 +58,7 @@ public class DriverFactory {
      */
     public static DriverWrapper createDriverFromConfig(){
 
-        PropertyManager props = new PropertyManager();
+        ConfigManager props = new ConfigManager();
         SupportedBrowsers driverBrowser = SupportedBrowsers.fromString(props.getDriverBrowser());
         boolean useGrid = Boolean.parseBoolean(props.getUseSeleniumGrid());
 
@@ -71,7 +71,7 @@ public class DriverFactory {
     private static DriverWrapper setup(SupportedBrowsers driverBrowser, boolean useGrid) {
 
         RemoteWebDriver driver;
-        PropertyManager props = new PropertyManager();
+        ConfigManager props = new ConfigManager();
 
         // If no browser has been specified throw an exception
         if (driverBrowser == null) {

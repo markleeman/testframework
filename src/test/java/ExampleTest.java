@@ -74,7 +74,7 @@ public class ExampleTest {
     @Test(retryAnalyzer = RetryOnFail.class)
     public void getRequest() {
 
-        PropertyManager props = new PropertyManager();
+        ConfigManager props = new ConfigManager();
         String endpoint = props.getBaseURL() + "status_codes/404";
 
         RestAPIHelper api = new RestAPIHelper(endpoint);
@@ -86,7 +86,7 @@ public class ExampleTest {
     @Test(retryAnalyzer = RetryOnFail.class)
     public void postRequest() {
 
-        PropertyManager props = new PropertyManager();
+        ConfigManager props = new ConfigManager();
         String endpoint = props.getBaseURL() + "authenticate";
 
         User testUser = TestAccounts.CUSTOMER.getUser();

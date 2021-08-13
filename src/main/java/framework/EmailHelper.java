@@ -31,7 +31,7 @@ public class EmailHelper {
     public EmailHelper() {
 
         try {
-            PropertyManager props = new PropertyManager();
+            ConfigManager props = new ConfigManager();
             Properties mailServerProps = new Properties();
 
             mailServerProps.put("mail.store.protocol", "imaps");

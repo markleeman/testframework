@@ -13,7 +13,7 @@ public class Util {
     private static final int DEFAULT_LENGTH = 10;
 
     public static String getValidEmail(){
-        PropertyManager props = new PropertyManager();
+        ConfigManager props = new ConfigManager();
 
         return props.getEmailUsername() + "+" + getRandomStringOfLength() + props.getEmailDomain();
     }

@@ -1,7 +1,7 @@
 package pageobjects;
 
 import framework.DriverWrapper;
-import framework.PropertyManager;
+import framework.ConfigManager;
 import framework.enums.SupportedBrowsers;
 import org.openqa.selenium.*;
 
@@ -12,13 +12,13 @@ public class BasePageObject {
 
     protected DriverWrapper driver;
     protected String BASE_URL;
-    protected PropertyManager props;
+    protected ConfigManager props;
 
     protected By browserError = By.cssSelector("browser:error");
 
     protected BasePageObject() {
 
-        props = new PropertyManager();
+        props = new ConfigManager();
         BASE_URL = props.getBaseURL();
     }
 

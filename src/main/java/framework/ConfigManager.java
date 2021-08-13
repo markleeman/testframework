@@ -9,11 +9,11 @@ import java.util.Properties;
  * each one should have it's own config file, and we use the framework.config system property to define which one we're
  * using at runtime.
  */
-public class PropertyManager {
+public class ConfigManager {
 
     private Properties props;
 
-    public PropertyManager() {
+    public ConfigManager() {
         props = new Properties();
 
         environment env = environment.fromString(System.getProperty("framework.config"));
@@ -24,11 +24,10 @@ public class PropertyManager {
         }
 
         try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream(env.configFile);
+            InputStream input = getClass().getClassLoader().getResourceAsStream(env.configFileName);
             props.load(input);
         } catch (IOException e) {
-            // Pretend nothing happened and carry on
-            // TODO something helpful
+            System.out.println("Config file not found");
         }
     }
 
@@ -62,8 +61,10 @@ public class PropertyManager {
 
     private String getPropValue(String key) {
 
+        // First, try and get the property from system properties
         String val = System.getProperty(key);
 
+        // If it's not there, check the config
         if (val == null || val.equals("")) {
             val = props.getProperty(key);
         }
@@ -88,11 +89,11 @@ public class PropertyManager {
         STAGING ("config.properties", "staging"),
         PRODUCTION ("config.properties", "production");
 
-        public final String configFile;
+        public final String configFileName;
         public final String envName;
 
         environment(String configFile, String envName){
-            this.configFile = configFile;
+            this.configFileName = configFile;
             this.envName = envName;
         }
 
