@@ -14,4 +14,4 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Maven
-      run: mvn -Ddriver_folder=$CHROMEWEBDRIVER -DexcludedGroups=excludeOnGithub clean test -PExample
+      run: mvn -Ddriver_folder=$CHROMEWEBDRIVER -DexcludedGroups=excludeOnGithub -Dframework.browser=chrome_headless clean test -PExample
