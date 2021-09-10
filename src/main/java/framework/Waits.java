@@ -16,7 +16,7 @@ public class Waits {
         this.driver = driver;
     }
 
-    private final int DEFAULT_TIMEOUT = 5;
+    private final Long DEFAULT_TIMEOUT = 5L;
 
     /**
      * Keep check the page title for the supplied number of seconds until it matches one of the supplied strings
@@ -43,7 +43,7 @@ public class Waits {
         return elementToBePresent(locator, DEFAULT_TIMEOUT);
     }
 
-    public WebElement elementToBePresent(By locator, int timeoutSeconds) {
+    public WebElement elementToBePresent(By locator, Long timeoutSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
@@ -52,7 +52,7 @@ public class Waits {
         return alertToBePresent(DEFAULT_TIMEOUT);
     }
 
-    public Alert alertToBePresent(int timeoutSeconds) {
+    public Alert alertToBePresent(Long timeoutSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
         return wait.until(ExpectedConditions.alertIsPresent());
     }
