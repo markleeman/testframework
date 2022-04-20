@@ -10,7 +10,6 @@ public enum SupportedBrowsers {
     CHROME (BrowserType.CHROME),
     CHROME_HEADLESS ("chrome_headless"),
     SAFARI (BrowserType.SAFARI),
-    IE11 (BrowserType.IEXPLORE),
     EDGE (BrowserType.EDGE);
 
     public final String browserName;
