@@ -56,7 +56,7 @@ public class DriverWrapper {
 
     public void closeTab(String tab){
         switchToTab(tab);
-        // TODO actually close the tab...
+        driver.close();
     }
 
     public Set<String> getTabs(){

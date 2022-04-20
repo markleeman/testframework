@@ -31,7 +31,7 @@ public class BasePageObject {
     protected void selfCheckPageTitleContains(String[] pageTitles) {
 
         try {
-            driver.waitFor.pageTitleToContain(pageTitles, 5);
+            driver.waitFor.pageTitleToContain(pageTitles, 5L);
         }
         catch (TimeoutException e) {
             StringBuilder expectedTitles = new StringBuilder();
@@ -97,36 +97,8 @@ public class BasePageObject {
             driver.okAlert();
         }
 
-        // Handling for security alerts in IE11
-        if (driver.browserIs(SupportedBrowsers.IE11)) {
-
-            // IE will occasionally throw up a security alert because of self signed certs
-            try {
-                driver.waitFor.pageTitleToContain(new String[] {"Certificate Error:"}, 5);
-
-                try {
-                    driver.okAlert();
-                    driver.waitFor.pageTitleToContain(new String[] {"This page can’t be displayed"}, 5);
-                }
-                catch(NoAlertPresentException e) { /* No alert present */ }
-
-                if (driver.pageTitleContains("Certificate Error:")){
-                    try {
-                        driver.findElement(By.id("overridelink")).click();
-
-                        // And then it might occasionally throw up a security alert
-                        Alert securityAlert = driver.waitFor.alertToBePresent();
-                        securityAlert.accept();
-                    }
-                    catch (NoSuchElementException | TimeoutException | NoAlertPresentException e){ /* No alert present */ }
-                }
-
-            }
-            catch(TimeoutException e){ /* No alert present */ }
-        }
-
         // Handling for security alerts in Edge
-        else if (driver.browserIs(SupportedBrowsers.EDGE)) {
+        if (driver.browserIs(SupportedBrowsers.EDGE)) {
 
             if (driver.pageTitleContains("Certificate Error:")){
                 try {
