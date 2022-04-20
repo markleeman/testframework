@@ -45,7 +45,7 @@ public class Util {
         Random rng = new Random();
 
         // If this is the first digit then don't allow a zero value
-        int firstDigit = rng.nextInt(9) + 1;;
+        int firstDigit = rng.nextInt(9) + 1;
 
         // We can then generate any random number for the remaining digits
         long remainingNDigits = RandomUtils.nextLong(0, (long)(Math.pow(10, (length - 1))));

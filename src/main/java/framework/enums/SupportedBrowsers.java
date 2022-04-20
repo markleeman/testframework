@@ -1,7 +1,6 @@
 package framework.enums;
 
 import org.openqa.selenium.remote.Browser;
-import org.openqa.selenium.remote.BrowserType;
 
 /**
  * Web browsers supported by the framework
